@@ -5,18 +5,19 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 
+import crawling.CrawlingApp;
 import diet_manager.model.vo.FoodVO;
 
 public class CrawlingModel {
 	Connection conn;
 	
 	public CrawlingModel() throws Exception {
-		Class.forName("oracle.jdbc.driver.OracleDriver");
 		
 		conn = DBConn.getConnection();
 	}
 	
 	public int insertFoodInfo(ArrayList<FoodVO> list) throws Exception{
+		checkData(list);
 		int result = 0;
 		String sql = "INSERT INTO D_FOOD ( " +
 				"fid, fname, fper, fcal, fco, fpro, ffat, fsu, fna, fcho, fsat, ftran, fnum, fcate) "+
@@ -41,6 +42,17 @@ public class CrawlingModel {
 			ps.setDouble(13, dao.getFcate());			
 			result += ps.executeUpdate();
 		}
+		ps.close();
 		return result;
+	}
+
+	private void checkData(ArrayList<FoodVO> list) {
+		StringBuffer sb = new StringBuffer();
+		CrawlingApp.Logg("-----------데이터-----------");
+		for(int i=0;i<list.size();i++) {
+			sb.append(list.get(i).toString()).append("\r\n");
+		}
+		CrawlingApp.Logg(sb.toString());
+		CrawlingApp.Logg("-----------데이터 끝-----------");
 	}
 }

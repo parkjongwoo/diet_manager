@@ -1,13 +1,11 @@
-package crawling.model;
+package jfreechartdemo.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import oracle.jdbc.driver.OracleDriver;
-
 public class DBConn {
 	static Connection conn;
-	String url = "jdbc:oracle:thin:@172.16.3.4:1521:orcl";
+	String url = "jdbc:oracle:thin:@localhost:1521:orcl";
 	String user = "scott";
 	String password = "tiger";
 	
@@ -15,8 +13,7 @@ public class DBConn {
 		// 1. 드라이버 로딩
 		// 2. Connection 객체 얻어오기
 		// 1. 드라이버로딩
-		new OracleDriver();
-		//Class.forName("oracle.jdbc.driver.OracleDriver");
+		Class.forName("oracle.jdbc.driver.OracleDriver");
 		// 2. Connection 연결객체 얻어오기
 
 		conn = DriverManager.getConnection(url, user, password);
