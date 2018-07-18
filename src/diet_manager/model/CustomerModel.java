@@ -6,13 +6,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import diet_manager.model.vo.Customer;
+import model.vo.Customer;
 
 public class CustomerModel {
 	Connection con;
 	String url = "jdbc:oracle:thin:@localhost:1521:orcl";
 	String user = "scott";
 	String pass = "tiger";
+	public Customer customer;
 	public CustomerModel() throws Exception {
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 		con=DriverManager.getConnection(url, user, pass);
@@ -28,31 +29,31 @@ public class CustomerModel {
 		st.setString(5, dao.getCustBirth());
 		st.setString(6, Double.toString(dao.getCustHeight()));
 		st.setString(7, Double.toString(dao.getCustWeight()));
-		st.setInt(8, dao.getCustEtc());
+		st.setString(8, dao.getCustEtc());
 		st.executeUpdate();
 		st.close();
 	}
 	
-	public Customer checkPass(String id,String pw) throws Exception {
-		String sql = "SELECT apass " + " FROM d_acount " + " WHERE aid=?";
+	public Customer checkPass(String id,String pwHash) throws Exception {
+		String sql = "SELECT * " + " FROM d_acount " + " WHERE aid=? and apass=?";
 		PreparedStatement st = con.prepareStatement(sql);
 		st.setString(1, id);
-		st.setString(2, pw);
+		st.setString(2, pwHash);
 		ResultSet rs = st.executeQuery();
-		Customer ch = new Customer();
+		Customer ch=null;
 		
 		while(rs.next()) {
-			ch.setCustName(rs.getString("aname"));
-			ch.setCustBirth(rs.getString("abirth"));
-			ch.setCustGender(rs.getString("azender"));
+			ch = new Customer();
 			ch.setCustId(rs.getString("aid"));
+			ch.setCustName(rs.getString("aname"));
 			ch.setCustPass(rs.getString("apass"));
-			ch.setCustEtc(rs.getInt("aetc"));
+			ch.setCustGender(rs.getString("azender"));
+			ch.setCustBirth(rs.getString("abirth"));
 			ch.setCustHeight(rs.getDouble("aheight"));
 			ch.setCustWeight(rs.getDouble("aweight"));
+			ch.setCustEtc(rs.getString("aetc"));
+			System.out.println("성공"+ch.toString());
 		}
-			
-		
 		
 		rs.close();
 		st.close();
