@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import crawling.model.CrawlingModel;
 import crawling.view.JobView;
 import crawling.view.PerspectiveView;
+import diet_manager.util.Util;
 
 public class CrawlingApp extends JFrame {
 
@@ -19,6 +20,7 @@ public class CrawlingApp extends JFrame {
 
 	public CrawlingApp() {
 		try {
+			System.out.println(Util.encrypt("1"));
 			jobView = new JobView();
 			perView = new PerspectiveView(this);
 
