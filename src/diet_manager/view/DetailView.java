@@ -1,16 +1,25 @@
-package foodmanagement;
+package diet_manager.view;
 
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import javax.swing.table.AbstractTableModel;
-
-import foodmanagement.View.EvtHdlr;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.AbstractTableModel;
 
 public class DetailView extends JFrame {
 	JTextArea taGraph;

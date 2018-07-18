@@ -1,4 +1,4 @@
-package foodmanagement;
+package diet_manager.view;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -16,8 +16,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import model.CustomerModel;
-import model.vo.Customer;
+import diet_manager.model.CustomerModel;
+import diet_manager.model.vo.Customer;
 
 public class RegistView extends JFrame {
 	JTextField tfName, tfId, tfTel, tfBirth, tfAge, tfHeight, tfWeight, tfEtc;
@@ -142,13 +142,13 @@ public class RegistView extends JFrame {
 		c.setCustName(tfName.getText());
 		c.setCustGender(group.getElements().nextElement().getText());
 		c.setCustId(tfId.getText());
-		c.setCustPass(pfPass.getPassword());
-		c.setCustTel(tfTel.getText());
+//		c.setCustPass(pfPass.getPassword());
+//		c.setCustTel(tfTel.getText());
 		c.setCustBirth(tfBirth.getText());
 //		c.setCustAge(Integer.parseInt(tfAge.getText()));
 		c.setCustHeight(Double.parseDouble((tfHeight.getText())));
 		c.setCustWeight(Double.parseDouble(tfWeight.getText()));
-		c.setCustEtc(tfEtc.getText());
+		c.setCustEtc(Integer.parseInt(tfEtc.getText()));
 		
 		try {
 			db.insertCustomer(c);

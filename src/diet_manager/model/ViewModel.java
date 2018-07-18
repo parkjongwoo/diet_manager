@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import diet_manager.model.vo.Customer;
+
 public class ViewModel {
 	String url = "jdbc:oracle:thin:@172.16.3.4:1521:orcl";
 	String user = "scott";

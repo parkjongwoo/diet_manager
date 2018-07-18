@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import model.vo.Customer;
+import diet_manager.model.vo.Customer;
 
 public class CustomerModel {
 	Connection con;
@@ -28,7 +28,7 @@ public class CustomerModel {
 		st.setString(5, dao.getCustBirth());
 		st.setString(6, Double.toString(dao.getCustHeight()));
 		st.setString(7, Double.toString(dao.getCustWeight()));
-		st.setString(8, dao.getCustEtc());
+		st.setInt(8, dao.getCustEtc());
 		st.executeUpdate();
 		st.close();
 	}
@@ -47,7 +47,7 @@ public class CustomerModel {
 			ch.setCustGender(rs.getString("azender"));
 			ch.setCustId(rs.getString("aid"));
 			ch.setCustPass(rs.getString("apass"));
-			ch.setCustEtc(rs.getString("aetc"));
+			ch.setCustEtc(rs.getInt("aetc"));
 			ch.setCustHeight(rs.getDouble("aheight"));
 			ch.setCustWeight(rs.getDouble("aweight"));
 		}

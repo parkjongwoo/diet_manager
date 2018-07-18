@@ -8,7 +8,7 @@ public class Customer {
 	String custBirth; //생년월일
 	double custHeight;   //키
 	double custWeight;   //무게
-	String custEtc;	  //특이사항
+	int custEtc;	  //특이사항
 	
 	public String getCustName() {
 		return custName;
@@ -52,10 +52,10 @@ public class Customer {
 	public void setCustWeight(double custWeight) {
 		this.custWeight = custWeight;
 	}
-	public String getCustEtc() {
+	public int getCustEtc() {
 		return custEtc;
 	}
-	public void setCustEtc(String custEtc) {
+	public void setCustEtc(int custEtc) {
 		this.custEtc = custEtc;
 	}
 	

@@ -18,8 +18,6 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 
-import FoodManagement.Login.ButtonEventHandler;
-
 public class FoodInsert extends JFrame {
 	BFView breakfast;
 	LCView lunch;
