@@ -108,9 +108,10 @@ public class View extends JFrame{
 			Customer c = db.cusInfo(id);
 			tfName.setText(c.getCustName());
 			tfGender.setText(c.getCustGender());
-			Calendar cal = Calendar.getInstance();
-			int year = cal.get(Calendar.YEAR);
-			tfAge.setText(Integer.toString(year - Integer.parseInt(c.getCustBirth())+1));
+			Calendar now = Calendar.getInstance();
+			Calendar birth = Calendar.getInstance();
+			birth.setTime(c.getCustBirth());
+			tfAge.setText(String.valueOf(now.get(Calendar.YEAR) - birth.get(Calendar.YEAR)+1));
 			tfHeight.setText(String.valueOf(c.getCustHeight()));
 			tfWeight.setText(String.valueOf(c.getCustWeight()));
 			tfEtc.setText(String.valueOf(c.getCustEtc()));

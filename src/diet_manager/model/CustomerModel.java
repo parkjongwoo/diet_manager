@@ -1,80 +1,64 @@
 package diet_manager.model;
 
-import java.security.MessageDigest;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import model.vo.Customer;
+import diet_manager.model.vo.Customer;
+import diet_manager.util.Util;
 
 public class CustomerModel {
-	Connection con;
-	String url = "jdbc:oracle:thin:@localhost:1521:orcl";
-	String user = "scott";
-	String pass = "tiger";
-	public Customer customer;
+	Connection con;	
+	private Customer customer;
+	
+	public Customer getCustomer() {
+		return customer;
+	}
+
 	public CustomerModel() throws Exception {
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-		con=DriverManager.getConnection(url, user, pass);
+		con = DBConn.getConnection();
 	}
 	
 	public void insertCustomer(Customer dao) throws Exception {
-		String sql = "INSERT INTO " + " d_acount(aid, aname, apass, azender, abirth, aheight, aweight, aetc) " + " VALUES(?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO " + " d_acount (aid, aname, apass, azender, abirth, aheight, aactive) " + " VALUES(?,?,?,?,?,?,?)";
 		PreparedStatement st = con.prepareStatement(sql);
 		st.setString(1, dao.getCustId());
 		st.setString(2, dao.getCustName());
-		st.setString(3, encrypt(String.valueOf(dao.getCustPass())));
+		st.setString(3, dao.getCustPass());
 		st.setString(4, dao.getCustGender());
-		st.setString(5, dao.getCustBirth());
-		st.setString(6, Double.toString(dao.getCustHeight()));
-		st.setString(7, Double.toString(dao.getCustWeight()));
-		st.setString(8, dao.getCustEtc());
+		st.setDate(5, Util.convertDtoD(dao.getCustBirth()));
+		st.setDouble(6, dao.getCustHeight());
+		st.setInt(7, dao.getCustEtc());
 		st.executeUpdate();
 		st.close();
 	}
 	
-	public Customer checkPass(String id,String pwHash) throws Exception {
-		String sql = "SELECT * " + " FROM d_acount " + " WHERE aid=? and apass=?";
+	public int checkPass(String id,String pwHash) throws Exception {
+		String sql = "SELECT a.aname name, a.azender gender, a.abirth birth, a.aheight height,"
+			     + " w.aweight weight, a.aactive active"
+			     + " FROM d_acount a INNER JOIN d_weight w "
+			     + " ON a.aid=w.aid and a.aid=? "
+			     + " WHERE a.aid=? and a.apass=?";
 		PreparedStatement st = con.prepareStatement(sql);
 		st.setString(1, id);
-		st.setString(2, pwHash);
+		st.setString(2, id);
+		st.setString(3, pwHash);
 		ResultSet rs = st.executeQuery();
-		Customer ch=null;
-		
+		int result = 0;
 		while(rs.next()) {
-			ch = new Customer();
-			ch.setCustId(rs.getString("aid"));
-			ch.setCustName(rs.getString("aname"));
-			ch.setCustPass(rs.getString("apass"));
-			ch.setCustGender(rs.getString("azender"));
-			ch.setCustBirth(rs.getString("abirth"));
-			ch.setCustHeight(rs.getDouble("aheight"));
-			ch.setCustWeight(rs.getDouble("aweight"));
-			ch.setCustEtc(rs.getString("aetc"));
-			System.out.println("성공"+ch.toString());
+			customer = new Customer();
+			customer.setCustId(id);
+			customer.setCustName(rs.getString(1));
+			customer.setCustGender(rs.getString(2));
+			customer.setCustBirth(rs.getDate(3));
+			customer.setCustHeight(rs.getDouble(4));
+			customer.setCustWeight(rs.getDouble(5));
+			customer.setCustEtc(rs.getInt(6));
+			result++;
 		}
 		
 		rs.close();
 		st.close();
-		return ch;
-	}
-	
-	public static String encrypt(String planText) {
-        try{
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(planText.getBytes());
-            byte byteData[] = md.digest();
-
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < byteData.length; i++) {
-                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
-            }          
-
-            return sb.toString();
-        }catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
+		return result;
+	}	
 }

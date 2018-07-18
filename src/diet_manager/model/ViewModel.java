@@ -1,21 +1,17 @@
 package diet_manager.model;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import diet_manager.model.vo.Customer;
 
 public class ViewModel {
-	String url = "jdbc:oracle:thin:@172.16.3.4:1521:orcl";
-	String user = "scott";
-	String pass = "tiger";
+	
 	Connection con;
 
-	public ViewModel() throws Exception {
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-		con = DriverManager.getConnection(url, user, pass);		
+	public ViewModel() throws Exception {		
+		con = DBConn.getConnection();	
 	}
 	
 	public Customer cusInfo(String id) throws Exception{
@@ -29,7 +25,7 @@ public class ViewModel {
 		if(rs.next()) {
 			dao.setCustName(rs.getString("name"));
 			dao.setCustGender(rs.getString("gender"));
-			dao.setCustBirth(rs.getString("birth"));
+			dao.setCustBirth(rs.getDate("birth"));
 			dao.setCustHeight(rs.getInt("height"));
 			dao.setCustWeight(rs.getInt("weight"));
 			dao.setCustEtc(rs.getInt("active"));			

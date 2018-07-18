@@ -1,12 +1,15 @@
 package diet_manager.view;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,22 +21,40 @@ import javax.swing.border.TitledBorder;
 
 import diet_manager.model.CustomerModel;
 import diet_manager.model.vo.Customer;
+import diet_manager.util.Util;
+import diet_manager.view.component.DatePicker;
 
-public class RegistView extends JFrame {
-	JTextField tfName, tfId, tfTel, tfBirth, tfAge, tfHeight, tfWeight, tfEtc;
+public class RegistView extends JFrame{
+	JTextField tfName, tfId, tfTel, 
+				tfAge, tfHeight, tfWeight, tfEtc;
 	JPasswordField pfPass;
 	JRadioButton male, female;
 	JButton bRegist;
 	ButtonGroup group;
-	
+	DatePicker dp;
 	CustomerModel db;
 	
 	public RegistView() {
+		
+		connectDB();
+		addLayout(); 	// 화면설계
+		eventProc();
+	}
+	
+	private void connectDB() {
+		try {
+			db = new CustomerModel();
+		} catch (Exception e) {
+			System.out.println("디비연결 실패");
+			e.printStackTrace();
+		}
+	}
+
+	public void addLayout() {
 		tfName = new JTextField(10);
 		tfId = new JTextField(10);
 		pfPass = new JPasswordField(10);
 		tfTel = new JTextField(10);
-		tfBirth = new JTextField(10);
 		tfAge = new JTextField(10);
 		tfHeight = new JTextField(10);
 		tfWeight = new JTextField(10);
@@ -47,12 +68,8 @@ public class RegistView extends JFrame {
 		group.add(male);
 		group.add(female);
 		
-		addLayout(); 	// 화면설계
-		eventProc();
-	}
-	
-	public void addLayout() {
-				
+		dp = new DatePicker();
+		
 		JPanel p_back = new JPanel();
 		p_back.setBorder(new TitledBorder("회원가입"));
 		p_back.setLayout(new BorderLayout());
@@ -87,7 +104,7 @@ public class RegistView extends JFrame {
 		
 		JPanel p_grid6 = new JPanel();
 		p_grid6.add(new JLabel("생년월일   "));
-		p_grid6.add(tfBirth);
+		p_grid6.add(dp);
 		p_category.add(p_grid6);
 		
 //		JPanel p_grid7 = new JPanel();
@@ -120,18 +137,19 @@ public class RegistView extends JFrame {
 		add(p_back, BorderLayout.CENTER);
 		setSize(300,500);
 		setVisible(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 	
 	public void eventProc() {
 		ButtonEventHandler btnHandler = new ButtonEventHandler();
 		bRegist.addActionListener(btnHandler);
+		
 	}
 	
 	class ButtonEventHandler implements ActionListener {
 		public void actionPerformed(ActionEvent ev) {
 			Object o = ev.getSource();
-			
+			System.out.println(ev.toString());
 			if(o==bRegist) {
 				registCustomer();
 			}
@@ -139,21 +157,23 @@ public class RegistView extends JFrame {
 	}
 	public void registCustomer() {
 		Customer c = new Customer();
+		char[] ca = pfPass.getPassword();
+		String pw = Util.encrypt(new String(ca));
 		c.setCustName(tfName.getText());
 		c.setCustGender(group.getElements().nextElement().getText());
 		c.setCustId(tfId.getText());
-//		c.setCustPass(pfPass.getPassword());
-//		c.setCustTel(tfTel.getText());
-		c.setCustBirth(tfBirth.getText());
-//		c.setCustAge(Integer.parseInt(tfAge.getText()));
+		c.setCustPass(pw);
+		c.setCustBirth(dp.getDate());
 		c.setCustHeight(Double.parseDouble((tfHeight.getText())));
-		c.setCustWeight(Double.parseDouble(tfWeight.getText()));
 		c.setCustEtc(Integer.parseInt(tfEtc.getText()));
 		
 		try {
 			db.insertCustomer(c);
+			Arrays.fill(ca, '0');
+			pw = null;
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "접속실패:"+e.getMessage());
 		}
 	}

@@ -4,21 +4,22 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Array;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
-import model.CustomerModel;
-import model.vo.Customer;
+import diet_manager.model.CustomerModel;
+import diet_manager.model.vo.Customer;
 
 
 public class Login extends JFrame {
@@ -60,13 +61,18 @@ public class Login extends JFrame {
 			Object o = ev.getSource();
 			
 			if(o==bRegist) {
-				new RegistView();
+				registUser();
+				
 			}
 			
 			if(o==bLogin) {
 				passCheck();
 			}
-		}
+		}		
+	}
+	
+	private void registUser() {
+		new RegistView();
 	}
 	
 	public void passCheck() {
@@ -79,12 +85,10 @@ public class Login extends JFrame {
 		String pwHash = encrypt(pw);
 		Arrays.fill(pw, '0');
 		try {
-			Customer c = db.checkPass(id,pwHash);
+			int result = db.checkPass(id,pwHash);
 			
-			//String check = db.customer.getCustPass();
-			if(c!=null) {
-				db.customer = c;
-		    	System.out.println("로그인 성공");
+			if(result>0) {				
+		    	System.out.println("로그인 성공:"+db.getCustomer().getCustId());
 			}
 			else {
 				System.out.println("실패");

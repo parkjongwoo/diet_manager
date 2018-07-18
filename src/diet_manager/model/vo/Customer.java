@@ -1,13 +1,15 @@
 package diet_manager.model.vo;
 
+import java.util.Date;
+
 public class Customer {
 	String custName;  //고객명
 	String custGender; //성별
 	String custId;    //아이디
 	String custPass;  //비밀번호
-	String custBirth; //생년월일
+	Date custBirth; //생년월일
 	double custHeight;   //키
-	double custWeight;   //무게
+	double custWeight;//몸무게
 	int custEtc;	  //특이사항
 	
 	public String getCustName() {
@@ -34,10 +36,10 @@ public class Customer {
 	public void setCustPass(String custPass) {
 		this.custPass = custPass;
 	}
-	public String getCustBirth() {
+	public Date getCustBirth() {
 		return custBirth;
 	}
-	public void setCustBirth(String custBirth) {
+	public void setCustBirth(Date custBirth) {
 		this.custBirth = custBirth;
 	}
 	public double getCustHeight() {
@@ -45,7 +47,7 @@ public class Customer {
 	}
 	public void setCustHeight(double custHeight) {
 		this.custHeight = custHeight;
-	}
+	}	
 	public double getCustWeight() {
 		return custWeight;
 	}

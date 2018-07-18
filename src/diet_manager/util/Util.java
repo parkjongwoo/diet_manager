@@ -28,4 +28,15 @@ public class Util {
             return null;
         }
     }
+	
+	public static java.sql.Date convertDtoD(java.util.Date d){
+		java.sql.Date d2 = new java.sql.Date(d.getTime());
+		
+		return d2;		
+	}
+//	public static java.util.Date convertDtoD2(java.sql.Date d){
+//		java.util.Date d2 = new java.util.Date(d.getTime());
+//		
+//		return d2;		
+//	}
 }
