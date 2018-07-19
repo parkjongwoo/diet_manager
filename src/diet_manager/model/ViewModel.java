@@ -9,7 +9,8 @@ import diet_manager.model.vo.Customer;
 public class ViewModel {
 	
 	Connection con;
-
+	public static Customer loginUser = null;
+	
 	public ViewModel() throws Exception {		
 		con = DBConn.getConnection();	
 	}

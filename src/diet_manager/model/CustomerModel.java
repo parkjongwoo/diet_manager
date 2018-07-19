@@ -9,12 +9,7 @@ import diet_manager.util.Util;
 
 public class CustomerModel {
 	Connection con;	
-	private Customer customer;
 	
-	public Customer getCustomer() {
-		return customer;
-	}
-
 	public CustomerModel() throws Exception {
 		con = DBConn.getConnection();
 	}
@@ -55,16 +50,16 @@ public class CustomerModel {
 		ResultSet rs = st.executeQuery();
 		int result = 0;
 		while(rs.next()) {
-			customer = new Customer();
-			customer.setCustId(id);
-			customer.setCustName(rs.getString(1));
-			customer.setCustGender(rs.getString(2));
-			customer.setCustBirth(rs.getDate(3));
-			customer.setCustHeight(rs.getDouble(4));
-			customer.setCustWeight(rs.getDouble(5));
-			customer.setCustEtc(rs.getInt(6));
+			ViewModel.loginUser = new Customer();
+			ViewModel.loginUser.setCustId(id);
+			ViewModel.loginUser.setCustName(rs.getString(1));
+			ViewModel.loginUser.setCustGender(rs.getString(2));
+			ViewModel.loginUser.setCustBirth(rs.getDate(3));
+			ViewModel.loginUser.setCustHeight(rs.getDouble(4));
+			ViewModel.loginUser.setCustWeight(rs.getDouble(5));
+			ViewModel.loginUser.setCustEtc(rs.getInt(6));
 			result++;
-			System.out.println("customer:"+customer.toString());
+			System.out.println("customer:"+ViewModel.loginUser.toString());
 		}
 		
 		rs.close();

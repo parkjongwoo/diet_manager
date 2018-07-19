@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import diet_manager.model.CustomerModel;
+import diet_manager.model.ViewModel;
 import diet_manager.model.vo.Customer;
 
 
@@ -88,7 +89,7 @@ public class Login extends JFrame {
 			int result = db.checkPass(id,pwHash);
 			
 			if(result>0) {				
-		    	System.out.println("로그인 성공:"+db.getCustomer().getCustId());
+		    	System.out.println("로그인 성공:"+ViewModel.loginUser.getCustId());
 			}
 			else {
 				System.out.println("실패");

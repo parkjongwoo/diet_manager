@@ -99,8 +99,8 @@ public class DetailView extends JFrame {
 		String d = cbD.getSelectedItem().toString();
 		
 		EatVO eat = new EatVO();
-		eat.setEdate(y+m+d);
-		eat.setAid(db.customer.getCustId());
+//		eat.setEdate(y+m+d);
+//		eat.setAid(db.customer.getCustId());
 		try {
 			tbModel.data = db_eat.find_food(eat);
 			tbModel.fireTableDataChanged();

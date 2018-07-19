@@ -178,8 +178,7 @@ public class JobView extends JPanel implements ActionListener, Runnable {
 				// 단백질:").append(e.child(5).text().trim())
 				// .append(", 지방:").append(e.child(6).text().trim());
 				dao = new FoodVO();
-				dao.setFcate(categoryIndex);
-				dao.setFnum(Integer.valueOf(e.child(0).text()));
+				
 				dao.setFper(getDoubleFromValue(e.child(2).text().trim()));// 1회제공량
 				dao.setFcal(getDoubleFromValue(e.child(3).text().trim()));// 칼로리
 				dao.setFco(getDoubleFromValue(e.child(4).text().trim()));// 탄수화물

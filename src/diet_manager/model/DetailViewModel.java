@@ -34,7 +34,7 @@ public class DetailViewModel {
 					+ " WHERE AID=? AND ETIME=?"
 					+ " ORDER BY ETIME DESC, EDATE ASC";
 		PreparedStatement st = con.prepareStatement(sql);
-		st.setString(1, db.customer.getCustId());
+//		st.setString(1, db.customer.getCustId());
 		st.setString(2, eat.getEtime());
 		ResultSet rs = st.executeQuery();
 		while(rs.next()) {

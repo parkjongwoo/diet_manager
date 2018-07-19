@@ -37,9 +37,7 @@ public class CrawlingModel {
 			ps.setDouble(8, dao.getFna());
 			ps.setDouble(9, dao.getFcho());
 			ps.setDouble(10, dao.getFsat());
-			ps.setDouble(11, dao.getFtran());
-			ps.setDouble(12, dao.getFnum());
-			ps.setDouble(13, dao.getFcate());			
+			ps.setDouble(11, dao.getFtran());			
 			result += ps.executeUpdate();
 		}
 		ps.close();
