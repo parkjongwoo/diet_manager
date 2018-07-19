@@ -6,7 +6,7 @@ public class EatVO {
 	boolean isSelected;//테이블 체크박스용
 	
 	int eid;//섭취아이디
-	int aid;//사용자아이디
+	String aid;//사용자아이디
 	Date edate;//먹은날짜
 	String etime;//먹은 시간대'아침''점심''저녁'
 	double eIntake;//먹은량 (g)
@@ -36,10 +36,10 @@ public class EatVO {
 	public void setEid(int eid) {
 		this.eid = eid;
 	}
-	public int getAid() {
+	public String getAid() {
 		return aid;
 	}
-	public void setAid(int aid) {
+	public void setAid(String aid) {
 		this.aid = aid;
 	}
 	public Date getEdate() {
