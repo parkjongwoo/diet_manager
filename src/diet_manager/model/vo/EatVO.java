@@ -146,6 +146,8 @@ public class EatVO {
 		this.fsat = vo.getFsat();//1회포화지방
 		this.ftran = vo.getFtran();//1회트랜스지방
 	}
-	
-	
+	@Override
+	public String toString() {
+			return eid + ":" + aid+ ":" + fid + ":"+ edate+ ":" +etime + ":" +eIntake;		
+	}
 }

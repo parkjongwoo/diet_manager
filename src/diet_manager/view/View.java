@@ -161,6 +161,7 @@ public class View extends JFrame {
 	public void updateData() {
 		if (ViewModel.loginUser == null)
 			return;
+		tfID.setText(ViewModel.loginUser.getCustId());
 		tfName.setText(ViewModel.loginUser.getCustName());
 		tfGender.setText(ViewModel.loginUser.getCustGender());
 		Calendar now = Calendar.getInstance();

@@ -15,6 +15,10 @@ public class FoodVO {
 	double fcho;
 	double fsat;
 	double ftran;
+	
+	double eIntake = 1.0; 
+	
+	
 
 	public boolean isChecked() {
 		return isChecked;
@@ -119,11 +123,20 @@ public class FoodVO {
 	public void setFtran(double ftran) {
 		this.ftran = ftran;
 	}
+	
+	public double geteIntake() {
+		return eIntake;
+	}
 
+	public void seteIntake(double eIntake) {
+		this.eIntake = eIntake;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(String.valueOf(fid)).append(':')
+		sb.append(String.valueOf(isChecked)).append(':')
+		.append(String.valueOf(fid)).append(':')
 		.append(String.valueOf(fname)).append(':')
 		.append(String.valueOf(fper)).append(':')
 		.append(String.valueOf(fcal)).append(':')
@@ -134,7 +147,8 @@ public class FoodVO {
 		.append(String.valueOf(fna)).append(':')
 		.append(String.valueOf(fcho)).append(':')
 		.append(String.valueOf(fsat)).append(':')
-		.append(String.valueOf(ftran));
+		.append(String.valueOf(ftran)).append(':')
+		.append(String.valueOf(eIntake));
 		return sb.toString();
 	}
 

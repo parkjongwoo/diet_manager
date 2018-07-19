@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import diet_manager.model.vo.EatVO;
 import diet_manager.model.vo.FoodVO;
 import diet_manager.util.Util;
 
@@ -22,26 +23,28 @@ public class FoodInsertModel {
 	/**
 	 * 먹은 식사를 DB에 입력
 	 * @param id 사용자ID
-	 * @param foodID 먹은 음식의 음식ID(d_food 테이블의 fid)
-	 * @param eatingDate 먹은 날짜의 java.util.Date 객체
 	 * @param eatingTime 먹은 시간대 "아침","점심","저녁"
+	 * @param foodID 먹은 음식의 음식ID(d_food 테이블의 fid)
 	 * @param intake 먹은 량. (g)단위
 	 * @return 처리된 데이터 수
 	 * @throws SQLException 
 	 */
-	public int insertMeal(String id, int foodID, Date eatingDate, 
-			String eatingTime, double intake) throws SQLException {
-		int result = 0;
-		
+	public int insertEat(ArrayList<EatVO> list) throws SQLException {
+		int result = 0;		
 		String sql = "INSERT INTO D_EAT(EID,AID,EDATE,ETIME,FID,EINTAKE) " + 
 				" VALUES (D_SEQ_EID.NEXTVAL, ?, SYSDATE, ?, ?, ?)";
 		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setString(1, id);
-		ps.setDate(2, Util.convertDtoD(eatingDate));
-		ps.setString(3, eatingTime);
-		ps.setInt(4, foodID);
-		ps.setDouble(5, intake);
-		result = ps.executeUpdate();
+		
+		for(int i=0;i<list.size();i++) {
+			EatVO vo = list.get(i);
+			ps.setString(1, vo.getAid());
+			ps.setString(2, vo.getEtime());
+			ps.setInt(3, vo.getFid());
+			ps.setDouble(4, vo.geteIntake());
+			ps.addBatch();
+			ps.clearParameters();
+		}
+		result += ps.executeBatch()[0];
 		ps.close();
 		
 		return result;
@@ -51,7 +54,7 @@ public class FoodInsertModel {
 		ArrayList<FoodVO> list = new ArrayList<FoodVO>();
 		String sql = "SELECT * FROM D_FOOD WHERE FNAME LIKE ?";
 		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.setString(1, "%"+foodName+"%");
+		ps.setString(1, "%"+foodName.trim()+"%");
 		ResultSet rs = ps.executeQuery();
 		while(rs.next()) {
 			FoodVO dao = new FoodVO();
