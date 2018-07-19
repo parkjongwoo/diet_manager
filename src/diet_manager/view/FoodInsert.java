@@ -1,6 +1,7 @@
 package diet_manager.view;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +19,9 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 
+import diet_manager.model.FoodInsertModel;
+import diet_manager.view.component.DatePicker;
+
 public class FoodInsert extends JFrame {
 	BFView breakfast;
 	LCView lunch;
@@ -27,12 +31,25 @@ public class FoodInsert extends JFrame {
 	JButton bSearch, bInsert, bModify, bDelete;
 	JTextArea ta;
 	
+	DatePicker dp_searchDate;
+	JButton b_resetDate;
+	
 	JTable tableRecentList;
 	tableModel tbModel;
 	
 	JTabbedPane pane;
 	
+	FoodInsertModel db;
+	
 	public FoodInsert() {
+		
+		connectDB();
+		addLayout();
+		eventProc();
+		
+	}
+	
+	public void addLayout() {
 		breakfast = new BFView();
 		lunch = new LCView();
 		dinner = new DNView();
@@ -54,8 +71,15 @@ public class FoodInsert extends JFrame {
 		pane.addTab("저녁", dinner);
 		pane.setSelectedIndex(2);
 		
-	}
-	public void addLayout() {
+		JPanel p_main_top = new JPanel();
+		p_main_top.setBorder(new TitledBorder("날짜별 조회"));
+		dp_searchDate = new DatePicker();
+		b_resetDate = new JButton("조회");
+		b_resetDate.setFont(new Font("맑은고딕", Font.BOLD, 12));
+		p_main_top.add(dp_searchDate);
+		p_main_top.add(b_resetDate);
+		
+		
 		JPanel p_back = new JPanel();
 		p_back.setLayout(new BorderLayout());
 		
@@ -120,14 +144,32 @@ public class FoodInsert extends JFrame {
 		setLayout(new BorderLayout());
 		p_back.add(p_west,BorderLayout.CENTER);
 		p_back.add(p_east,BorderLayout.EAST);
+		p_back.add(p_main_top, BorderLayout.NORTH);
 		add(p_back);
 		
 
 		setSize(1200,800);
 		setVisible( true );
 
-		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 	}
+	
+	public void eventProc() {
+		ButtonEventHandler btnHandler = new ButtonEventHandler();
+		bSearch.addActionListener(btnHandler);
+		
+		
+	}
+	
+	public void connectDB() {
+		try {
+			db = new FoodInsertModel();
+		} catch (Exception e) {
+			System.out.println("디비 연결 실패");
+			e.printStackTrace();
+		}
+	}
+	
 	class tableModel extends AbstractTableModel { 
 		  
 		ArrayList data = new ArrayList();
@@ -151,17 +193,26 @@ public class FoodInsert extends JFrame {
 		    }
 	}
 	
-	public void eventProc() {
-		ButtonEventHandler btnHandler = new ButtonEventHandler();
-		bSearch.addActionListener(btnHandler);
-		
-	}
+	
 	
 	class ButtonEventHandler implements ActionListener {
 		public void actionPerformed(ActionEvent ev) {
 			Object o = ev.getSource();
 			
+			
 			if(o==bSearch) {
+				SearchFood();
+			}else if(o==bInsert) {
+				SearchFood();
+			}else if(o==bModify) {
+				SearchFood();
+			}else if(o==bDelete) {
+				SearchFood();
+			}else if(o==b_resetDate) {
+				SearchFood();
+			}else if(o==bSearch) {
+				SearchFood();
+			}else if(o==bSearch) {
 				SearchFood();
 			}
 		}

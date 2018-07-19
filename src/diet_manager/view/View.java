@@ -48,8 +48,10 @@ public class View extends JFrame{
 		LinkMouseListener ml = new LinkMouseListener();
 
 		LLogin.addMouseListener(ml);
+		bInsert.addActionListener(eh);
 		bShow.addActionListener(eh);
 		bExit.addActionListener(eh);
+		bCheck.addActionListener(eh);
 		bWeight.addActionListener(eh);
 		
 		this.addWindowListener(new WindowAdapter() {
@@ -68,13 +70,13 @@ public class View extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object evt = e.getSource();
+			System.out.println("이벤트:"+evt);
 			if(evt==bInsert) {
-
+				new FoodInsert();
 			}			
 			else if(evt==bShow) {
 				new DetailView();
-			}
-			else if(evt==bExit) {
+			}else if(evt==bExit) {
 				int result = JOptionPane.showConfirmDialog(null, "종료하시겠습니까?","종료",JOptionPane.YES_NO_OPTION);
 				if(result==JOptionPane.OK_OPTION) {
 					System.exit(0);
@@ -82,8 +84,9 @@ public class View extends JFrame{
 				else {
 					setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 				}
-			}
-			else if(evt==bWeight) {
+			}else if(evt==bCheck) {
+				JOptionPane.showMessageDialog(null, "체크버튼");
+			}else if(evt==bWeight) {
 				modifyWeight();
 				tfWeight.setText(tfUpdate.getText());
 				diet();
