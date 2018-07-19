@@ -27,22 +27,23 @@ import javax.swing.border.TitledBorder;
 import diet_manager.model.ViewModel;
 import diet_manager.model.vo.Customer;
 
-public class View extends JFrame{
+public class View extends JFrame {
 	JTextArea ta, ta2;
 	JTextField tfUpdate, tfID, tfWeight, tfHeight, tfName, tfGender, tfAge, tfEtc, tfKcal, tfTot, tfState, tfDiet;
 	JComboBox cb;
 	JLabel LLogin, LJoin;
-	JButton bInsert, bShow, bExit, bCheck, bWeight;	
-	String[] str = {"일별", "주별", "월별"};
+	JButton bInsert, bShow, bExit, bCheck, bWeight;
+	String[] str = { "일별", "주별", "월별" };
 
 	ViewModel db;
 
-	public View(){
+	public View() {
 		addLayout();
-		connectDB();		
+		connectDB();
 		cusInfo();
 		eventProc();
 	}
+
 	public void eventProc() {
 		EvtHdlr eh = new EvtHdlr();
 		LinkMouseListener ml = new LinkMouseListener();
@@ -53,132 +54,170 @@ public class View extends JFrame{
 		bExit.addActionListener(eh);
 		bCheck.addActionListener(eh);
 		bWeight.addActionListener(eh);
-		
-		this.addWindowListener(new WindowAdapter() {
+
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				int result = JOptionPane.showConfirmDialog(null, "종료하시겠습니까?","종료",JOptionPane.YES_NO_OPTION);
-				if(result==JOptionPane.OK_OPTION) {
+				int result = JOptionPane.showConfirmDialog(null, "종료하시겠습니까?", "종료", JOptionPane.YES_NO_OPTION);
+				if (result == JOptionPane.OK_OPTION) {
 					System.exit(0);
-				}
-				else {
+				} else {
 					setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 				}
-			}				
+			}
+		});
+		addWindowFocusListener(new WindowAdapter() {
+			@Override
+			public void windowGainedFocus(WindowEvent e) {
+				super.windowGainedFocus(e);
+				updateData();
+			}
 		});
 	}
+
 	class EvtHdlr implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object evt = e.getSource();
-			System.out.println("이벤트:"+evt);
-			if(evt==bInsert) {
+			System.out.println("이벤트:" + evt);
+			if (evt == bInsert) {
 				new FoodInsert();
-			}			
-			else if(evt==bShow) {
+			} else if (evt == bShow) {
 				new DetailView();
-			}else if(evt==bExit) {
-				int result = JOptionPane.showConfirmDialog(null, "종료하시겠습니까?","종료",JOptionPane.YES_NO_OPTION);
-				if(result==JOptionPane.OK_OPTION) {
+			} else if (evt == bExit) {
+				int result = JOptionPane.showConfirmDialog(null, "종료하시겠습니까?", "종료", JOptionPane.YES_NO_OPTION);
+				if (result == JOptionPane.OK_OPTION) {
 					System.exit(0);
-				}
-				else {
+				} else {
 					setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 				}
-			}else if(evt==bCheck) {
+			} else if (evt == bCheck) {
 				JOptionPane.showMessageDialog(null, "체크버튼");
-			}else if(evt==bWeight) {
+			} else if (evt == bWeight) {
 				modifyWeight();
 				tfWeight.setText(tfUpdate.getText());
 				diet();
 			}
-		}		
+		}
 	}
+
 	class LinkMouseListener extends MouseAdapter {
 		@Override
 		public void mouseClicked(java.awt.event.MouseEvent evt) {
 			JLabel l = (JLabel) evt.getSource();
-			if(l==LLogin) {
-				
+			if (l == LLogin) {
+				if (ViewModel.loginUser == null) {
+					new Login();
+				} else {
+					JOptionPane.showMessageDialog(null, ViewModel.loginUser.getCustName() + "님이 로그인 중입니다.");
+				}
+			} else if (l == LJoin) {
+				if (ViewModel.loginUser == null) {
+					new RegistView();
+				} else {
+					JOptionPane.showMessageDialog(null, ViewModel.loginUser.getCustName() + "님이 로그인 중입니다.");
+				}
 			}
-			else if (l==LJoin) {
+		}
+	}
 
-			}
-		}
-	}
 	public void cusInfo() {
-		String id = tfID.getText();
-		try {
-			Customer c = db.cusInfo(id);
-			tfName.setText(c.getCustName());
-			tfGender.setText(c.getCustGender());
-			Calendar now = Calendar.getInstance();
-			Calendar birth = Calendar.getInstance();
-			birth.setTime(c.getCustBirth());
-			tfAge.setText(String.valueOf(now.get(Calendar.YEAR) - birth.get(Calendar.YEAR)+1));
-			tfHeight.setText(String.valueOf(c.getCustHeight()));
-			tfWeight.setText(String.valueOf(c.getCustWeight()));
-			tfEtc.setText(String.valueOf(c.getCustEtc()));
-			tfUpdate.setText(String.valueOf(c.getCustWeight()));
-			diet();
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			int result = JOptionPane.showConfirmDialog(null, "로그인하시겠습니까?","Error",JOptionPane.YES_NO_OPTION);
-			if(result==JOptionPane.OK_OPTION) {
-				
+		// String id = tfID.getText();
+		// try {
+		// Customer c = db.cusInfo(id);
+		// tfName.setText(c.getCustName());
+		// tfGender.setText(c.getCustGender());
+		// Calendar now = Calendar.getInstance();
+		// Calendar birth = Calendar.getInstance();
+		// birth.setTime(c.getCustBirth());
+		// tfAge.setText(String.valueOf(now.get(Calendar.YEAR) -
+		// birth.get(Calendar.YEAR)+1));
+		// tfHeight.setText(String.valueOf(c.getCustHeight()));
+		// tfWeight.setText(String.valueOf(c.getCustWeight()));
+		// tfEtc.setText(String.valueOf(c.getCustEtc()));
+		// tfUpdate.setText(String.valueOf(c.getCustWeight()));
+		// diet();
+		// }
+		// catch(Exception e) {
+		// System.out.println(e.getMessage());
+		// int result = JOptionPane.showConfirmDialog(null,
+		// "로그인하시겠습니까?","Error",JOptionPane.YES_NO_OPTION);
+		// if(result==JOptionPane.OK_OPTION) {
+		//
+		// }
+		// else {
+		// setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		// }
+		// }
+		if (ViewModel.loginUser == null) {
+			int result = JOptionPane.showConfirmDialog(null, "로그인하시겠습니까?", "Error", JOptionPane.YES_NO_OPTION);
+			if (result == JOptionPane.OK_OPTION) {
+				new Login();
 			}
-			else {
-				setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-			}
+		} else {
+			JOptionPane.showMessageDialog(null, ViewModel.loginUser.getCustName() + "님이 로그인 중입니다.");
 		}
 	}
+
+	public void updateData() {
+		if (ViewModel.loginUser == null)
+			return;
+		tfName.setText(ViewModel.loginUser.getCustName());
+		tfGender.setText(ViewModel.loginUser.getCustGender());
+		Calendar now = Calendar.getInstance();
+		Calendar birth = Calendar.getInstance();
+		birth.setTime(ViewModel.loginUser.getCustBirth());
+		tfAge.setText(String.valueOf(now.get(Calendar.YEAR) - birth.get(Calendar.YEAR) + 1));
+		tfHeight.setText(String.valueOf(ViewModel.loginUser.getCustHeight()));
+		tfWeight.setText(String.valueOf(ViewModel.loginUser.getCustWeight()));
+		tfEtc.setText(String.valueOf(ViewModel.loginUser.getCustEtc()));
+		tfUpdate.setText(String.valueOf(ViewModel.loginUser.getCustWeight()));
+		diet();
+	}
+
 	public void diet() {
-		tfKcal.setText(String.valueOf(Math.round((((Double.parseDouble(tfHeight.getText())-100)*0.9))*Double.parseDouble(tfEtc.getText()))));
-		double diet = Double.parseDouble(tfWeight.getText())/(Double.parseDouble(tfHeight.getText())*2/100);
+		tfKcal.setText(String.valueOf(Math.round(
+				(((Double.parseDouble(tfHeight.getText()) - 100) * 0.9)) * Double.parseDouble(tfEtc.getText()))));
+		double diet = Double.parseDouble(tfWeight.getText()) / (Double.parseDouble(tfHeight.getText()) * 2 / 100);
 		if (diet <= 18.5) {
 			tfDiet.setText("저체중");
-		}
-		else if (diet <= 23 && diet > 18.5) {
+		} else if (diet <= 23 && diet > 18.5) {
 			tfDiet.setText("정상");
-		}
-		else if (diet <= 25 && diet > 23) {
+		} else if (diet <= 25 && diet > 23) {
 			tfDiet.setText("과체중");
-		}
-		else if (diet <= 30 && diet > 25) {
+		} else if (diet <= 30 && diet > 25) {
 			tfDiet.setText("비만");
-		}
-		else if (diet > 30) {
+		} else if (diet > 30) {
 			tfDiet.setText("고도비만");
-		}	
+		}
 	}
+
 	public void modifyWeight() {
 		String id = tfID.getText();
 		Customer c = new Customer();
 		c.setCustWeight(Double.parseDouble((tfUpdate.getText())));
 		try {
 			db.modifyWeight(c, id);
-			JOptionPane.showMessageDialog(null, "수정되었습니다.");			
-		}
-		catch(Exception e) {
-			JOptionPane.showMessageDialog(null, "수정 실패"+e.getMessage());
+			JOptionPane.showMessageDialog(null, "수정되었습니다.");
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "수정 실패" + e.getMessage());
 		}
 	}
-	public void connectDB(){
+
+	public void connectDB() {
 		try {
 			db = new ViewModel();
-			System.out.println("고객디비 연결");			
-		}
-		catch (Exception e){
-			System.out.println("고객디비 연결 실패:"+e.getMessage());
+			System.out.println("고객디비 연결");
+		} catch (Exception e) {
+			System.out.println("고객디비 연결 실패:" + e.getMessage());
 
 		}
 	}
 
 	public void addLayout() {
-		ta = new JTextArea("그래프 공간");	    
+		ta = new JTextArea("그래프 공간");
 		ta2 = new JTextArea("그래프 공간");
 		ta2.setLineWrap(true);
-		LLogin = new JLabel("로그인");	    
+		LLogin = new JLabel("로그인");
 		LJoin = new JLabel("회원가입");
 		bInsert = new JButton("식단입력");
 		bInsert.setFont(new Font("돋움", Font.BOLD, 15));
@@ -191,7 +230,7 @@ public class View extends JFrame{
 		bWeight.setFont(new Font("맑은고딕", Font.BOLD, 11));
 		tfUpdate = new JTextField(5);
 		tfUpdate.setHorizontalAlignment(JTextField.RIGHT);
-		tfID = new JTextField("pcw7895", 8);
+		tfID = new JTextField(8);
 		tfID.setHorizontalAlignment(JTextField.CENTER);
 		tfID.setBorder(BorderFactory.createEmptyBorder());
 		tfWeight = new JTextField(8);
@@ -226,45 +265,45 @@ public class View extends JFrame{
 
 		cb = new JComboBox(str);
 
-		JPanel p_up = new JPanel(new BorderLayout());		
+		JPanel p_up = new JPanel(new BorderLayout());
 
-		JPanel p_title = new JPanel();		
+		JPanel p_title = new JPanel();
 		JLabel LTitle = new JLabel("식단 관리 모니터링 시스템");
-		LTitle.setFont(new Font("돋움", Font.BOLD, 25));		
+		LTitle.setFont(new Font("돋움", Font.BOLD, 25));
 		p_title.add(LTitle);
 
 		JPanel p_up_down = new JPanel(new BorderLayout());
 
-		JPanel p_up_down_north= new JPanel(new FlowLayout(FlowLayout.TRAILING));		
+		JPanel p_up_down_north = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 		p_up_down_north.add(LLogin);
 		p_up_down_north.add(new JLabel(" | "));
-		p_up_down_north.add(LJoin);		
+		p_up_down_north.add(LJoin);
 
 		p_up_down.add(p_up_down_north, BorderLayout.NORTH);
 
 		JPanel p_up_down_south = new JPanel(new BorderLayout());
-		JScrollPane p_up_down_south_east = new JScrollPane(ta);		
-		p_up_down_south_east.setBorder(new TitledBorder("일일 섭취 칼로리(Kcal)"));		
+		JScrollPane p_up_down_south_east = new JScrollPane(ta);
+		p_up_down_south_east.setBorder(new TitledBorder("일일 섭취 칼로리(Kcal)"));
 
 		p_up_down_south.add(p_up_down_south_east, BorderLayout.CENTER);
 
-		JPanel p_up_down_south_west = new JPanel(new GridLayout(11,1));		
+		JPanel p_up_down_south_west = new JPanel(new GridLayout(11, 1));
 		p_up_down_south_west.setBorder(new TitledBorder("요 약"));
 		p_up_down_south_west.add(new JLabel(" "));
 		p_up_down_south_west.add(new JLabel(" "));
 
-		JPanel p_west_kcal = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
+		JPanel p_west_kcal = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		p_west_kcal.add(new JLabel("∙ 권장 섭취량       "));
 		p_west_kcal.add(tfKcal);
 		p_west_kcal.add(new JLabel("Kcal"));
 		p_up_down_south_west.add(p_west_kcal);
 		JPanel p_west_func = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JLabel func= new JLabel("    ※권장 칼로리 = {(본인키-100) × 0.9} × 활동지수    ");
+		JLabel func = new JLabel("    ※권장 칼로리 = {(본인키-100) × 0.9} × 활동지수    ");
 		func.setFont(new Font("맑은고딕", Font.ITALIC, 11));
 		func.setForeground(Color.RED);
 		p_west_func.add(func);
-		p_up_down_south_west.add(p_west_func);	
-		JPanel p_west_tot = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
+		p_up_down_south_west.add(p_west_func);
+		JPanel p_west_tot = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		p_west_tot.add(new JLabel("∙ 현재 섭취량       "));
 		p_west_tot.add(tfTot);
 		p_west_tot.add(new JLabel("Kcal"));
@@ -276,35 +315,35 @@ public class View extends JFrame{
 		warn.setForeground(Color.RED);
 
 		p_west_state.add(warn);
-		p_up_down_south_west.add(p_west_state);		
+		p_up_down_south_west.add(p_west_state);
 		JPanel p_west_tf = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		p_west_tf.add(tfState);
-		p_up_down_south_west.add(p_west_tf);								
+		p_up_down_south_west.add(p_west_tf);
 
-		p_up_down_south.add(p_up_down_south_west, BorderLayout.EAST);			
-		p_up_down.add(p_up_down_south);		
+		p_up_down_south.add(p_up_down_south_west, BorderLayout.EAST);
+		p_up_down.add(p_up_down_south);
 
 		p_up.add(p_title, BorderLayout.NORTH);
-		p_up.add(p_up_down, BorderLayout.CENTER);		
+		p_up.add(p_up_down, BorderLayout.CENTER);
 
 		JPanel p_down = new JPanel(new BorderLayout());
-		p_down.setBorder(new TitledBorder("체중관리"));	
+		p_down.setBorder(new TitledBorder("체중관리"));
 
 		JPanel p_down_top_weight = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 		p_down_top_weight.add(new JLabel("현재 몸무게"));
 		p_down_top_weight.add(tfUpdate);
-		p_down_top_weight.add(new JLabel("Kg"));		
+		p_down_top_weight.add(new JLabel("Kg"));
 		p_down_top_weight.add(bWeight);
 		p_down_top_weight.add(cb);
-		p_down_top_weight.add(bCheck);		
+		p_down_top_weight.add(bCheck);
 		p_down.add(p_down_top_weight, BorderLayout.NORTH);
 
-		JPanel p_down_bottom = new JPanel(new BorderLayout());		
+		JPanel p_down_bottom = new JPanel(new BorderLayout());
 		p_down.add(p_down_bottom, BorderLayout.CENTER);
 
 		JPanel p_down_bottom_east = new JPanel(new BorderLayout());
 		p_down_bottom_east.setBorder(new TitledBorder("칼로리&몸무게 변화량"));
-		p_down_bottom_east.add(ta2);		
+		p_down_bottom_east.add(ta2);
 		p_down_bottom.add(p_down_bottom_east, BorderLayout.CENTER);
 
 		JPanel p_down_bottom_east_combo = new JPanel(new FlowLayout(FlowLayout.TRAILING));
@@ -312,47 +351,55 @@ public class View extends JFrame{
 		p_down_bottom_east_combo.add(bCheck);
 		p_down_bottom_east.add(p_down_bottom_east_combo, BorderLayout.NORTH);
 
-		JPanel p_down_bottom_west = new JPanel(new GridLayout(8,1));
+		JPanel p_down_bottom_west = new JPanel(new GridLayout(8, 1));
 		p_down_bottom_west.setBorder(new TitledBorder("회원 정보"));
-		JPanel p_bottom_id = new JPanel(new FlowLayout(FlowLayout.RIGHT));		
-		p_bottom_id.add(new JLabel("   아    이    디            ")); p_bottom_id.add(tfID);
+		JPanel p_bottom_id = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		p_bottom_id.add(new JLabel("   아    이    디            "));
+		p_bottom_id.add(tfID);
 		p_down_bottom_west.add(p_bottom_id);
-		JPanel p_bottom_name = new JPanel(new FlowLayout(FlowLayout.RIGHT));		
-		p_bottom_name.add(new JLabel("  이            름            ")); p_bottom_name.add(tfName);
+		JPanel p_bottom_name = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		p_bottom_name.add(new JLabel("  이            름            "));
+		p_bottom_name.add(tfName);
 		p_down_bottom_west.add(p_bottom_name);
-		JPanel p_bottom_gender = new JPanel(new FlowLayout(FlowLayout.RIGHT));		
-		p_bottom_gender.add(new JLabel("  성            별            ")); p_bottom_gender.add(tfGender);
+		JPanel p_bottom_gender = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		p_bottom_gender.add(new JLabel("  성            별            "));
+		p_bottom_gender.add(tfGender);
 		p_down_bottom_west.add(p_bottom_gender);
-		JPanel p_bottom_age = new JPanel(new FlowLayout(FlowLayout.RIGHT));		
-		p_bottom_age.add(new JLabel("  나    이(세)            ")); p_bottom_age.add(tfAge);
+		JPanel p_bottom_age = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		p_bottom_age.add(new JLabel("  나    이(세)            "));
+		p_bottom_age.add(tfAge);
 		p_down_bottom_west.add(p_bottom_age);
-		JPanel p_bottom_height = new JPanel(new FlowLayout(FlowLayout.RIGHT));		
-		p_bottom_height.add(new JLabel("  키(cm)                ")); p_bottom_height.add(tfHeight);
+		JPanel p_bottom_height = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		p_bottom_height.add(new JLabel("  키(cm)                "));
+		p_bottom_height.add(tfHeight);
 		p_down_bottom_west.add(p_bottom_height);
-		JPanel p_bottom_weight = new JPanel(new FlowLayout(FlowLayout.RIGHT));		
-		p_bottom_weight.add(new JLabel("  몸무게(Kg)            ")); p_bottom_weight.add(tfWeight);
+		JPanel p_bottom_weight = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		p_bottom_weight.add(new JLabel("  몸무게(Kg)            "));
+		p_bottom_weight.add(tfWeight);
 		p_down_bottom_west.add(p_bottom_weight);
-		JPanel p_bottom_etc = new JPanel(new FlowLayout(FlowLayout.RIGHT));		
-		p_bottom_etc.add(new JLabel("  활 동 지 수            ")); p_bottom_etc.add(tfEtc);
+		JPanel p_bottom_etc = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		p_bottom_etc.add(new JLabel("  활 동 지 수            "));
+		p_bottom_etc.add(tfEtc);
 		p_down_bottom_west.add(p_bottom_etc);
-		JPanel p_bottom_diet = new JPanel(new FlowLayout(FlowLayout.RIGHT));		
-		p_bottom_diet.add(new JLabel("  비    만    도            ")); p_bottom_diet.add(tfDiet);
+		JPanel p_bottom_diet = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		p_bottom_diet.add(new JLabel("  비    만    도            "));
+		p_bottom_diet.add(tfDiet);
 		p_down_bottom_west.add(p_bottom_diet);
 
-		p_down_bottom.add(p_down_bottom_west,BorderLayout.WEST); 
+		p_down_bottom.add(p_down_bottom_west, BorderLayout.WEST);
 
 		JPanel p_down_menu = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		p_down_menu.add(bInsert);
 		p_down_menu.add(bShow);
-		p_down_menu.add(bExit);		
+		p_down_menu.add(bExit);
 
 		p_down.add(p_down_menu, BorderLayout.SOUTH);
 
-		setLayout(new GridLayout(2,1));
+		setLayout(new GridLayout(2, 1));
 		add(p_up);
 		add(p_down);
 
-		setSize(900,800);
-		setVisible( true );		
+		setSize(900, 800);
+		setVisible(true);
 	}
 }

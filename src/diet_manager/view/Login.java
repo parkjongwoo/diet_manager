@@ -21,6 +21,7 @@ import javax.swing.border.TitledBorder;
 import diet_manager.model.CustomerModel;
 import diet_manager.model.ViewModel;
 import diet_manager.model.vo.Customer;
+import diet_manager.util.Util;
 
 
 public class Login extends JFrame {
@@ -83,16 +84,19 @@ public class Login extends JFrame {
 		
 		String id = tfId.getText();
 		char[] pw = pfPass.getPassword();
-		String pwHash = encrypt(pw);
+		String pw2 = new String(pw);
+		String pwHash = Util.encrypt(pw2);
 		Arrays.fill(pw, '0');
+		pw2 = null;
 		try {
 			int result = db.checkPass(id,pwHash);
 			
 			if(result>0) {				
-		    	System.out.println("로그인 성공:"+ViewModel.loginUser.getCustId());
+				JOptionPane.showMessageDialog(null,ViewModel.loginUser.getCustName()+"님 환영합니다.");
+				dispose();
 			}
 			else {
-				System.out.println("실패");
+				JOptionPane.showMessageDialog(null,"로그인을 실패하였습니다. 아이디와 비밀번호를 확인해주세요.");
 			}
 		}
 		catch (Exception e) {
@@ -157,30 +161,7 @@ public class Login extends JFrame {
 
 		setSize(600,500);
 		setVisible(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	}	
 	
-	public static String encrypt(String planText) {
-        try{
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(planText.getBytes());
-            byte byteData[] = md.digest();
-
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < byteData.length; i++) {
-                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
-            }          
-
-            return sb.toString();
-        }catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-	public static String encrypt(char[] cArr) {
-		String a = new String(cArr);
-		String r = encrypt(a);
-		a = null;
-		return r;
-	}
 }
