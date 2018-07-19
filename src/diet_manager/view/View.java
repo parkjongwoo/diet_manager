@@ -2,6 +2,7 @@ package diet_manager.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -10,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.swing.BorderFactory;
@@ -24,15 +27,35 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.category.CategoryToPieDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.util.TableOrder;
+
 import diet_manager.model.ViewModel;
 import diet_manager.model.vo.Customer;
+import diet_manager.model.vo.EatVO;
+import diet_manager.model.vo.WeightVO;
+import diet_manager.util.Util;
 
 public class View extends JFrame {
-	JTextArea ta, ta2;
+//	JTextArea ta, ta2;JLabel 
 	JTextField tfUpdate, tfID, tfWeight, tfHeight, tfName, tfGender, tfAge, tfEtc, tfKcal, tfTot, tfState, tfDiet;
 	JComboBox cb;
-	JLabel LLogin, LJoin;
+	JLabel LLogin, LJoin,warn;
 	JButton bInsert, bShow, bExit, bCheck, bWeight;
+	JFreeChart chart_eat;
+	JFreeChart chart_weight;
 	String[] str = { "일별", "주별", "월별" };
 
 	ViewModel db;
@@ -40,9 +63,12 @@ public class View extends JFrame {
 	public View() {
 		addLayout();
 		connectDB();
-		cusInfo();
 		eventProc();
+		cusInfo();
+		updateEatGraph();
 	}
+
+	
 
 	public void eventProc() {
 		EvtHdlr eh = new EvtHdlr();
@@ -78,7 +104,7 @@ public class View extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object evt = e.getSource();
-			System.out.println("이벤트:" + evt);
+//			System.out.println("이벤트:" + evt);
 			if (evt == bInsert) {
 				new FoodInsert();
 			} else if (evt == bShow) {
@@ -157,10 +183,32 @@ public class View extends JFrame {
 			JOptionPane.showMessageDialog(null, ViewModel.loginUser.getCustName() + "님이 로그인 중입니다.");
 		}
 	}
-
+	
+	private void updateEatGraph() {
+		try {			
+			((PiePlot)chart_eat.getPlot()).setDataset(getPieDataSet());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	private void updateWeightGraph() {
+		try {			
+			chart_weight.getXYPlot().setDataset(getWeightDataSet());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void updateData() {
 		if (ViewModel.loginUser == null)
 			return;
+		try {
+			db.checkPass(ViewModel.loginUser.getCustId());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		tfID.setText(ViewModel.loginUser.getCustId());
 		tfName.setText(ViewModel.loginUser.getCustName());
 		tfGender.setText(ViewModel.loginUser.getCustGender());
@@ -172,13 +220,31 @@ public class View extends JFrame {
 		tfWeight.setText(String.valueOf(ViewModel.loginUser.getCustWeight()));
 		tfEtc.setText(String.valueOf(ViewModel.loginUser.getCustEtc()));
 		tfUpdate.setText(String.valueOf(ViewModel.loginUser.getCustWeight()));
+		
+		try {
+			db.searchTodayEatList(ViewModel.loginUser.getCustId());
+			db.searchWeightList(ViewModel.loginUser.getCustId());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		updateEatGraph();
+		updateWeightGraph();
 		diet();
+		
+		
 	}
 
+	
+
+
+
 	public void diet() {
-		tfKcal.setText(String.valueOf(Math.round(
-				(((Double.parseDouble(tfHeight.getText()) - 100) * 0.9)) * Double.parseDouble(tfEtc.getText()))));
-		double diet = Double.parseDouble(tfWeight.getText()) / (Double.parseDouble(tfHeight.getText()) * 2 / 100);
+		double goodCal = Math.round(((ViewModel.loginUser.getCustHeight() - 100) * 0.9)) *
+				ViewModel.loginUser.getCustEtc();
+		double todayCal = db.getTodayCal();
+		double differ = Util.formating(todayCal - goodCal,0);
+		tfKcal.setText(String.valueOf(goodCal));
+		double diet = ViewModel.loginUser.getCustWeight() / (ViewModel.loginUser.getCustHeight() * 2 / 100);
 		if (diet <= 18.5) {
 			tfDiet.setText("저체중");
 		} else if (diet <= 23 && diet > 18.5) {
@@ -190,14 +256,26 @@ public class View extends JFrame {
 		} else if (diet > 30) {
 			tfDiet.setText("고도비만");
 		}
+		
+		tfTot.setText(String.valueOf(todayCal));
+		StringBuffer sb = new StringBuffer();
+		if(differ<100) {
+			sb.append("칼로리 섭취가 ").append(differ).append("Cal 부족합니다.");
+			warn.setVisible(false);
+		}else if(differ>100) {
+			sb.append("칼로리 섭취가 ").append(differ).append("Cal 많습니다.");
+			warn.setVisible(true);
+		}else {
+			sb.append("적정량 섭취하셨습니다.");
+			warn.setVisible(false);
+		}
+		tfState.setText(sb.toString());
 	}
 
 	public void modifyWeight() {
-		String id = tfID.getText();
-		Customer c = new Customer();
-		c.setCustWeight(Double.parseDouble((tfUpdate.getText())));
-		try {
-			db.modifyWeight(c, id);
+		if(ViewModel.loginUser==null)return;
+		try {			
+			db.modifyWeight(Double.parseDouble((tfUpdate.getText())), ViewModel.loginUser.getCustId());
 			JOptionPane.showMessageDialog(null, "수정되었습니다.");
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "수정 실패" + e.getMessage());
@@ -215,9 +293,9 @@ public class View extends JFrame {
 	}
 
 	public void addLayout() {
-		ta = new JTextArea("그래프 공간");
-		ta2 = new JTextArea("그래프 공간");
-		ta2.setLineWrap(true);
+//		ta = new JTextArea("그래프 공간");
+//		ta2 = new JTextArea("그래프 공간");
+//		ta2.setLineWrap(true);
 		LLogin = new JLabel("로그인");
 		LJoin = new JLabel("회원가입");
 		bInsert = new JButton("식단입력");
@@ -260,7 +338,7 @@ public class View extends JFrame {
 		tfKcal.setBorder(BorderFactory.createEmptyBorder());
 		tfTot = new JTextField(5);
 		tfTot.setHorizontalAlignment(JTextField.RIGHT);
-		tfState = new JTextField("현재 349Kcal가 부족합니다.", 20);
+		tfState = new JTextField(20);
 		tfState.setHorizontalAlignment(JTextField.CENTER);
 		tfState.setBorder(BorderFactory.createEmptyBorder());
 
@@ -283,7 +361,8 @@ public class View extends JFrame {
 		p_up_down.add(p_up_down_north, BorderLayout.NORTH);
 
 		JPanel p_up_down_south = new JPanel(new BorderLayout());
-		JScrollPane p_up_down_south_east = new JScrollPane(ta);
+		chart_eat = getPieChart();
+		JScrollPane p_up_down_south_east = new JScrollPane(getChartPanel(chart_eat));
 		p_up_down_south_east.setBorder(new TitledBorder("일일 섭취 칼로리(Kcal)"));
 
 		p_up_down_south.add(p_up_down_south_east, BorderLayout.CENTER);
@@ -311,7 +390,7 @@ public class View extends JFrame {
 		p_up_down_south_west.add(p_west_tot);
 		p_up_down_south_west.add(new JLabel(" "));
 		JPanel p_west_state = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		JLabel warn = new JLabel("      ※Warning※");
+		warn = new JLabel("      ※Warning※");
 		warn.setFont(new Font("맑은고딕", Font.ITALIC, 13));
 		warn.setForeground(Color.RED);
 
@@ -344,7 +423,8 @@ public class View extends JFrame {
 
 		JPanel p_down_bottom_east = new JPanel(new BorderLayout());
 		p_down_bottom_east.setBorder(new TitledBorder("칼로리&몸무게 변화량"));
-		p_down_bottom_east.add(ta2);
+		chart_weight = getLineChart();
+		p_down_bottom_east.add(getChartPanel(chart_weight));
 		p_down_bottom.add(p_down_bottom_east, BorderLayout.CENTER);
 
 		JPanel p_down_bottom_east_combo = new JPanel(new FlowLayout(FlowLayout.TRAILING));
@@ -402,5 +482,110 @@ public class View extends JFrame {
 
 		setSize(900, 800);
 		setVisible(true);
+	}
+	private Component getChartPanel(JFreeChart chart2) {
+		ChartPanel cp = new ChartPanel(chart2,
+				600,//가로사이즈
+				150,//세로사이즈
+				600,//최소가로사이즈
+				150,//최소세로사이즈
+				600,//최대가로사이즈
+				150,false,false,false,false,false,false);//최소가로사이즈
+				
+		return cp;
+	}
+	
+	private JFreeChart getPieChart()  {
+
+		JFreeChart chart = ChartFactory.createPieChart("오늘 섭취량", // title
+				getPieDataSet(), // dataset
+				false, // legend
+				true, // tooltips
+				false); // url
+		PiePlot p = (PiePlot)chart.getPlot();
+		// 차트의 배경색 설정입니다.
+		p.setBackgroundPaint(Color.white);
+//		// 라벨 설정입니다. 
+		p.setLabelFont(new Font("돋움", Font.BOLD, 8));
+		chart.getTitle().setFont(new Font("돋움", Font.BOLD, 8));
+//		chart.getLegend().setItemFont(new Font("돋움", Font.BOLD, 8));
+		return chart;
+	}
+	private XYDataset getWeightDataSet()  {
+		DefaultXYDataset dataSet = new DefaultXYDataset();
+		TimeSeriesCollection colection = new TimeSeriesCollection();
+		if(ViewModel.loginUser == null) 
+			return dataSet;			
+		
+		ArrayList<WeightVO> list = db.weightList;
+		// addValue() 메서드를 이용해서 값을 추가함
+		dataSet.addSeries("체중", getSeriesData(list));
+
+		return dataSet;
+	}
+	private double[][] getSeriesData(ArrayList<WeightVO> list) {
+		double[][] seriese = new double[2][list.size()];
+		for(int i=0;i<list.size();i++) {
+			seriese[0][i] = list.get(i).getAdate().getTime();
+			seriese[1][i] = list.get(i).getWeight();
+		}
+		return seriese;
+	}
+
+
+
+	private DefaultPieDataset getPieDataSet()  {
+		DefaultPieDataset dataSet = new DefaultPieDataset();
+		
+		if(ViewModel.loginUser == null) 
+			return dataSet;			
+		
+		ArrayList<EatVO> list = db.todayEatList;		
+		double co=0,fat=0,pro=0;
+		// addValue() 메서드를 이용해서 값을 추가함
+		for (int i = 0; i < list.size(); i++) {
+			co += list.get(i).getFco();
+			fat += list.get(i).getFfat();
+			pro += list.get(i).getFpro();
+		}
+//		double sum = co+fat+pro;
+		dataSet.setValue("탄수화물",co);
+		dataSet.setValue("지방",fat);
+		dataSet.setValue("단백질",pro);
+		
+		return dataSet;
+	}
+//	private CategoryToPieDataset getPieDataSet()  {
+//		CategoryToPieDataset dataSet = new CategoryToPieDataset(
+//				getDataSet(),//변환해서 사용할 CategoryDataset
+//				TableOrder.BY_ROW,
+//				0);
+//		
+//		return dataSet;
+//	}
+	
+	public JFreeChart getLineChart() {
+
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(
+				"몸무게 변화표", 
+				"시간변화", 
+				"변량", 
+				getWeightDataSet()); // url
+		XYPlot p = chart.getXYPlot();
+		chart.getTitle().setFont(new Font("돋움", Font.BOLD, 8));
+		// 차트의 배경색 설정입니다.
+		p.setBackgroundPaint(Color.white);
+		// 차트의 배경 라인 색상입니다.
+		p.setRangeGridlinePaint(Color.gray);
+		// X 축의 라벨 설정입니다. (보조 타이틀)
+		p.getDomainAxis().setLabelFont(new Font("돋움", Font.BOLD, 8));
+		// X 축의 도메인 설정입니다.
+		p.getDomainAxis().setTickLabelFont(new Font("돋움", Font.BOLD, 8));
+		// Y 축의 라벨 설정입니다. (보조 타이틀)
+		p.getRangeAxis().setLabelFont(new Font("돋움", Font.BOLD, 8));
+		// Y 축의 도메인 설정입니다.
+		p.getRangeAxis().setTickLabelFont(new Font("돋움", Font.BOLD, 8));
+		chart.getLegend().setItemFont(new Font("돋움", Font.BOLD, 8));
+		return chart;
 	}
 }

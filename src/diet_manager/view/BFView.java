@@ -9,6 +9,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import diet_manager.model.vo.EatVO;
+
 public class BFView extends JPanel {
 	
 	JTable tableRecentList;
@@ -17,6 +19,10 @@ public class BFView extends JPanel {
 	public BFView() {
 		
 		addLayout();
+	}
+	
+	public void addData(ArrayList<EatVO> list) {
+		
 	}
 	
 	public void addLayout() {

@@ -205,12 +205,17 @@ public class RegistView extends JFrame{
 			Object o = ev.getSource();
 			if(o==bRegist) {
 				if(checkFormData())
-					registCustomer();
-				JOptionPane.showMessageDialog(null, "등록되었습니다.");
+					if(registCustomer()>0) {
+						JOptionPane.showMessageDialog(null, "등록되었습니다.");
+						dispose();
+					}else {
+						JOptionPane.showMessageDialog(null, "가입할 수 없습니다.");
+					}
 			}
 		}
 	}
-	public void registCustomer() {
+	public int registCustomer() {
+		int result = 0;
 		Customer c = new Customer();
 		char[] ca = pfPass.getPassword();
 		String pw = Util.encrypt(new String(ca));
@@ -223,7 +228,7 @@ public class RegistView extends JFrame{
 		c.setCustEtc(Integer.parseInt(tfEtc.getText()));
 		c.setCustWeight(Double.parseDouble((tfWeight.getText())));
 		try {
-			db.insertCustomer(c);
+			result = db.insertCustomer(c);
 			Arrays.fill(ca, '0');
 			pw = null;
 		}
@@ -231,5 +236,6 @@ public class RegistView extends JFrame{
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "접속실패:"+e.getMessage());
 		}
+		return result;
 	}	
 }

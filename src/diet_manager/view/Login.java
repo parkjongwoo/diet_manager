@@ -56,6 +56,13 @@ public class Login extends JFrame {
 		ButtonEventHandler btnHandler = new ButtonEventHandler();
 		bRegist.addActionListener(btnHandler);
 		bLogin.addActionListener(btnHandler);
+		pfPass.addActionListener(btnHandler);
+		tfId.addActionListener(btnHandler);
+	}
+	
+	private void clearInfo() {
+		tfId.setText(null);
+		pfPass.setText(null);;
 	}
 	
 	class ButtonEventHandler implements ActionListener {
@@ -63,12 +70,18 @@ public class Login extends JFrame {
 			Object o = ev.getSource();
 			
 			if(o==bRegist) {
+				clearInfo();
 				registUser();
 				
-			}
-			
-			if(o==bLogin) {
+			}else if(o==bLogin) {
 				passCheck();
+				clearInfo();
+			}else if(o==pfPass) {
+				passCheck();
+				clearInfo();
+			}else if(o==tfId) {
+				passCheck();
+				clearInfo();
 			}
 		}		
 	}

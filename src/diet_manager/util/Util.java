@@ -1,6 +1,7 @@
 package diet_manager.util;
 
 import java.security.MessageDigest;
+import java.text.DecimalFormat;
 
 public class Util {
 	/**
@@ -34,6 +35,24 @@ public class Util {
 		
 		return d2;		
 	}
+	
+	public static double formating(double num, int d) {
+		StringBuffer sb = new StringBuffer("#.");
+		for(int i=0;i<d;i++) {
+			sb.append('#');
+		}
+		DecimalFormat df = new DecimalFormat(sb.toString());
+		return Double.parseDouble(df.format(num));
+	}
+	public static String formatingS(double num, int d) {
+		StringBuffer sb = new StringBuffer("#.");
+		for(int i=0;i<d;i++) {
+			sb.append('#');
+		}
+		DecimalFormat df = new DecimalFormat(sb.toString());
+		return df.format(num);
+	}
+	
 //	public static java.util.Date convertDtoD2(java.sql.Date d){
 //		java.util.Date d2 = new java.util.Date(d.getTime());
 //		

@@ -3,7 +3,7 @@ package diet_manager.model.vo;
 import java.util.Date;
 
 public class EatVO {
-	boolean isSelected;//테이블 체크박스용
+	boolean isChecked;//테이블 체크박스용
 	
 	int eid;//섭취아이디
 	String aid;//사용자아이디
@@ -24,11 +24,11 @@ public class EatVO {
 	double fsat;//1회포화지방
 	double ftran;//1회트랜스지방
 	
-	public boolean isSelected() {
-		return isSelected;
+	public boolean isChecked() {
+		return isChecked;
 	}
-	public void setSelected(boolean isSelected) {
-		this.isSelected = isSelected;
+	public void setChecked(boolean isChecked) {
+		this.isChecked = isChecked;
 	}
 	public int getEid() {
 		return eid;

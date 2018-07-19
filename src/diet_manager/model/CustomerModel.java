@@ -14,7 +14,8 @@ public class CustomerModel {
 		con = DBConn.getConnection();
 	}
 	
-	public void insertCustomer(Customer dao) throws Exception {
+	public int insertCustomer(Customer dao) throws Exception {
+		int result = 0;
 		String sql = " INSERT ALL" + 
 				" INTO d_acount VALUES (aid, aname, apass, azender, abirth, aheight, aactive)" + 
 				" INTO d_weight VALUES (aid, adate, aweight)" + 
@@ -29,12 +30,14 @@ public class CustomerModel {
 		st.setDouble(6, dao.getCustHeight());
 		st.setInt(7, dao.getCustEtc());
 		st.setDouble(8, dao.getCustWeight());
-		st.executeUpdate();
+		result = st.executeUpdate();
 		st.close();
+		
+		return result;
 	}
 	
 	public int checkPass(String id,String pwHash) throws Exception {
-		System.out.println("id:"+id+" pwHash:"+pwHash);
+//		System.out.println("id:"+id+" pwHash:"+pwHash);
 		String sql = "SELECT a.aname name, a.azender gender, a.abirth birth, a.aheight height, " + 
 				"			    w.aweight weight, a.aactive active " + 
 				"			    FROM d_acount a INNER JOIN " + 
@@ -59,7 +62,7 @@ public class CustomerModel {
 			ViewModel.loginUser.setCustWeight(rs.getDouble(5));
 			ViewModel.loginUser.setCustEtc(rs.getInt(6));
 			result++;
-			System.out.println("customer:"+ViewModel.loginUser.toString());
+//			System.out.println("customer:"+ViewModel.loginUser.toString());
 		}
 		
 		rs.close();

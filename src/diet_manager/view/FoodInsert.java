@@ -1,6 +1,7 @@
 package diet_manager.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -20,36 +21,49 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import diet_manager.model.FoodInsertModel;
 import diet_manager.model.ViewModel;
 import diet_manager.model.vo.EatVO;
 import diet_manager.model.vo.FoodVO;
+import diet_manager.util.Util;
+import diet_manager.view.EatJPannel.TableModel;
 import diet_manager.view.component.DatePicker;
 
 public class FoodInsert extends JFrame {
 	String[] paneNames = {"아침","점심","저녁"};
-	BFView breakfast;
-	LCView lunch;
-	DNView dinner;
-
+	EatJPannel breakfast;
+	EatJPannel lunch;
+	EatJPannel dinner;
+	EatJPannel allDay;
+	
 	JTextField tfFood, tfKcal;
 	JButton bSearch, bInsert, bModify, bDelete;
-	JTextArea ta;
+//	JTextArea ta;
 
 	DatePicker dp_searchDate;
 	JButton b_resetDate;
 
 	JTable tableRecentList;
-	TableModel tbModel;
+	VOTableModel tbModel;
 
 	JTabbedPane pane;
-
+	
+	JFreeChart chart;
+	
 	FoodInsertModel db;
 
 	public FoodInsert() {
@@ -57,13 +71,13 @@ public class FoodInsert extends JFrame {
 		connectDB();
 		addLayout();
 		eventProc();
-
+		searchEat();
 	}
 
 	public void addLayout() {
-		breakfast = new BFView();
-		lunch = new LCView();
-		dinner = new DNView();
+		breakfast = new EatJPannel(paneNames[0]);
+		lunch = new EatJPannel(paneNames[1]);
+		dinner = new EatJPannel(paneNames[2]);
 
 		tfFood = new JTextField();
 		tfKcal = new JTextField();
@@ -71,21 +85,22 @@ public class FoodInsert extends JFrame {
 		bInsert = new JButton("등록");
 		bModify = new JButton("수정");
 		bDelete = new JButton("선택 삭제");
-		ta = new JTextArea("그래프");
+//		ta = new JTextArea("그래프");
 		
 		JCheckBox checkBox = new JCheckBox();
-		tbModel = new TableModel();
+		tbModel = new VOTableModel();
 		tableRecentList = new JTable(tbModel);
 		tableRecentList.getColumn("선택").setCellRenderer(dtcr);
 		tableRecentList.getColumn("선택").setCellEditor(new DefaultCellEditor(checkBox));
-//		tableRecentList.getColumn("선택").setPreferredWidth(40);
+		tableRecentList.getColumn("선택").setPreferredWidth(20);
 		checkBox.setHorizontalAlignment(JLabel.CENTER);
 		
 		pane = new JTabbedPane();
 		pane.addTab("아침", breakfast);
 		pane.addTab("점심", lunch);
 		pane.addTab("저녁", dinner);
-		pane.setSelectedIndex(2);
+		updatePaneByTime();
+		
 
 		JPanel p_main_top = new JPanel();
 		p_main_top.setBorder(new TitledBorder("날짜별 조회"));
@@ -132,8 +147,9 @@ public class FoodInsert extends JFrame {
 		p_ingred.add(pane, BorderLayout.NORTH);
 
 		JPanel p_graph = new JPanel();
-		p_graph.setBorder(new TitledBorder("섭취한 영양소"));
-		p_graph.add(ta, BorderLayout.CENTER);
+		p_graph.setBorder(new TitledBorder("섭취한 영양소"));	
+		chart = getBarChart();
+		p_graph.add(getChartPanel(chart));
 		p_ingred.add(p_graph);
 
 		JPanel p_button = new JPanel();
@@ -167,9 +183,99 @@ public class FoodInsert extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 	
+	private Component getChartPanel(JFreeChart chart2) {
+		ChartPanel cp = new ChartPanel(chart2,
+				600,//가로사이즈
+				150,//세로사이즈
+				600,//최소가로사이즈
+				150,//최소세로사이즈
+				600,//최대가로사이즈
+				150,false,false,false,false,false,false);//최소가로사이즈
+				
+		return cp;
+	}
+
+	private JFreeChart getBarChart() {
+
+		JFreeChart chart = ChartFactory.createBarChart(getSelectedPaneName()+" 섭취량", // title
+				"3대영양소", // categoryAxisLabel
+				"섭취량", // valueAxisLabel
+				getDataSet(), // dataset
+				PlotOrientation.HORIZONTAL, // orientation
+				true, // legend
+				true, // tooltips
+				false); // url
+		CategoryPlot p = chart.getCategoryPlot();
+		// 차트의 배경색 설정입니다.
+		p.setBackgroundPaint(Color.white);
+		// 차트의 배경 라인 색상입니다.
+		p.setRangeGridlinePaint(Color.gray);
+		// X 축의 라벨 설정입니다. (보조 타이틀)
+		p.getDomainAxis().setLabelFont(new Font("돋움", Font.BOLD, 15));
+		// X 축의 도메인 설정입니다.
+		p.getDomainAxis().setTickLabelFont(new Font("돋움", Font.BOLD, 10));
+		// Y 축의 라벨 설정입니다. (보조 타이틀)
+		p.getRangeAxis().setLabelFont(new Font("돋움", Font.BOLD, 15));
+		// Y 축의 도메인 설정입니다.
+		p.getRangeAxis().setTickLabelFont(new Font("돋움", Font.BOLD, 10));
+		// 범례 폰트 조정
+		chart.getLegend().setItemFont(new Font("돋움", Font.BOLD, 10));
+		//타이틀 폰트 조정
+		chart.getTitle().setFont(new Font("돋움", Font.BOLD, 15));
+		return chart;
+	}
+	
+	private DefaultCategoryDataset getDataSet() {
+		DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
+		EatJPannel onShowPanel = ((EatJPannel)pane.getSelectedComponent());
+		TableModel model = onShowPanel.tbModel;
+		
+		double co=0,fat=0,pro=0;
+		// addValue() 메서드를 이용해서 값을 추가함
+		for (int i = 0; i < model.getRowCount(); i++) {
+			co += (Double)model.getValueAt(i, 3);
+			fat += (Double)model.getValueAt(i, 5);
+			pro += (Double)model.getValueAt(i, 4);
+			
+
+		}
+		double sum = co+fat+pro;
+		dataSet.addValue(co, Math.round(co/sum*100)+"%", "탄수화물");
+		dataSet.addValue(fat,Math.round(fat/sum*100)+"%","지방");
+		dataSet.addValue(pro,Math.round(pro/sum*100)+"%","단백질");
+		return dataSet;
+	}
+	
+	private void updatePaneByTime() {
+		Calendar c = Calendar.getInstance();
+		int h = c.get(Calendar.HOUR_OF_DAY);
+		
+		if(h<=10) {
+			pane.setSelectedIndex(0);
+		}else if(h>=16) {
+			pane.setSelectedIndex(2);
+		}else {
+			pane.setSelectedIndex(1);
+		}
+	}
+
 	private String getSelectedPaneName() {
 		return paneNames[pane.getSelectedIndex()];
 	}
+	
+	private void updateTabs(ArrayList<EatVO> list) {
+		breakfast.changeData(list);
+		lunch.changeData(list);
+		dinner.changeData(list);
+		
+		tfKcal.setText(Util.formatingS(((EatJPannel)pane.getSelectedComponent()).getTotalCal(),2));
+	}
+	
+	private void updateGraph() {		
+		chart.getCategoryPlot().setDataset(getDataSet());
+		
+	}
+	
 	public void eventProc() {
 		ButtonEventHandler btnHandler = new ButtonEventHandler();
 		bSearch.addActionListener(btnHandler);
@@ -177,6 +283,14 @@ public class FoodInsert extends JFrame {
 		bInsert.addActionListener(btnHandler);
 		bModify.addActionListener(btnHandler);
 		bDelete.addActionListener(btnHandler);
+		b_resetDate.addActionListener(btnHandler);
+		pane.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				updateGraph();
+			}
+		});
 	}
 
 	public void connectDB() {
@@ -186,6 +300,12 @@ public class FoodInsert extends JFrame {
 			System.out.println("디비 연결 실패");
 			e.printStackTrace();
 		}
+	}
+	
+	private void clearFoodTable() {
+		((VOTableModel)tableRecentList.getModel()).data.clear();
+		((VOTableModel)tableRecentList.getModel()).fireTableDataChanged();
+		tfFood.setText(null);
 	}
 	
 	public void SearchFood() {
@@ -200,6 +320,17 @@ public class FoodInsert extends JFrame {
 		}
 	}
 	
+	public void searchEat() {
+		try {
+			ArrayList<EatVO> list = db.searchEat(ViewModel.loginUser.getCustId(),dp_searchDate.getDate());
+			updateTabs(list);
+			updateGraph();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "검색실패");
+			e.printStackTrace();
+		}
+	}
+
 	public void insertEat() {
 		ArrayList<EatVO> list = new ArrayList<EatVO>();
 		ArrayList<FoodVO> checkList = tbModel.data;
@@ -217,17 +348,19 @@ public class FoodInsert extends JFrame {
 				}
 			}
 			int resultCount = db.insertEat(list);
-			JOptionPane.showMessageDialog(this, resultCount+"개의 데이터가 입력되었습니다.");
+			searchEat();
+			clearFoodTable();
+			JOptionPane.showMessageDialog(this, "데이터가 입력되었습니다.");
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "검색실패");
 			e.printStackTrace();
-		}
-		
+		}		
 	}
-	class TableModel extends AbstractTableModel{
+	
+	public class VOTableModel extends AbstractTableModel{
 
 		ArrayList<FoodVO> data = new ArrayList<FoodVO>();
-		String[] columnNames = { "선택", "음식명", "1회제공량(g)","먹은비율" };
+		String[] columnNames = { "선택", "음식명", "1회제공량(g)","칼로리","먹은비율" };
 		
 		@Override
 		public int getColumnCount() {
@@ -237,6 +370,7 @@ public class FoodInsert extends JFrame {
 		public int getRowCount() {
 			return data.size();
 		}
+		
 		@Override
 		public Object getValueAt(int row, int col) {
 			FoodVO temp = data.get(row);
@@ -249,9 +383,12 @@ public class FoodInsert extends JFrame {
 				result = temp.getFname();
 				break;
 			case 2:
-				result = temp.getFcal();
+				result = temp.getFper();
 				break;
 			case 3:
+				result = temp.getFcal();
+				break;
+			case 4:
 				result = temp.geteIntake();
 				break;
 			}
@@ -263,7 +400,7 @@ public class FoodInsert extends JFrame {
 		}
 		@Override
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			return columnIndex==3||columnIndex==0;
+			return columnIndex==4||columnIndex==0;
 		}
 		@Override
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
@@ -271,7 +408,7 @@ public class FoodInsert extends JFrame {
 			case 0:
 				data.get(rowIndex).setChecked((boolean)aValue);
 				break;
-			case 3:
+			case 4:
 				data.get(rowIndex).seteIntake(Double.parseDouble((String) aValue));
 				break;
 			}			
@@ -301,14 +438,12 @@ public class FoodInsert extends JFrame {
 			} else if (o == bInsert) {
 				insertEat();
 			} else if (o == bModify) {
-				SearchFood();
+				
 			} else if (o == bDelete) {
-				SearchFood();
+				
 			} else if (o == b_resetDate) {
-				SearchFood();
+				searchEat();
 			} else if (o == tfFood) {
-				SearchFood();
-			} else if (o == bSearch) {
 				SearchFood();
 			}
 		}
