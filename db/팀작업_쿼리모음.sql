@@ -97,4 +97,28 @@ FROM D_EAT E INNER JOIN D_FOOD F ON E.FID=F.FID
 WHERE EDATE=? AND E.AID=? AND E.ETIME=?
 ORDER BY EDATE ASC;
 
+---------------------------------------------메인화면
 
+--***사용자 오늘날짜 몸무게가 있으면 업데이트, 없으면 인서트 쿼리
+--직접입력
+MERGE INTO d_weight w
+USING (SELECT 'hong' aid,TO_CHAR(SYSDATE,'yyyy-mm-dd') adate,100 aweight FROM dual) n
+ON ( w.aid = n.aid and w.adate=n.adate)
+WHEN MATCHED THEN
+UPDATE
+SET w.aweight = n.aweight
+WHEN NOT MATCHED THEN
+INSERT ( aid,adate,aweight)
+VALUES (n.aid,n.adate,n.aweight);
+
+--java용
+--***사용자 오늘날짜 몸무게가 있으면 업데이트, 없으면 인서트 쿼리:: 첫?- 사용자 id :: 두번째?-입력할 몸무게
+MERGE INTO d_weight w
+USING (SELECT ? aid,TO_CHAR(SYSDATE,'yyyy-mm-dd') adate,? aweight FROM dual) n
+ON ( w.aid = n.aid and w.adate=n.adate)
+WHEN MATCHED THEN
+UPDATE
+SET w.aweight = n.aweight
+WHEN NOT MATCHED THEN
+INSERT ( aid,adate,aweight)
+VALUES (n.aid,n.adate,n.aweight);
