@@ -20,7 +20,11 @@ public class CustomerModel {
 	}
 	
 	public void insertCustomer(Customer dao) throws Exception {
-		String sql = "INSERT INTO " + " d_acount (aid, aname, apass, azender, abirth, aheight, aactive) " + " VALUES(?,?,?,?,?,?,?)";
+		String sql = " INSERT ALL" + 
+				" INTO d_acount VALUES (aid, aname, apass, azender, abirth, aheight, aactive)" + 
+				" INTO d_weight VALUES (aid, adate, aweight)" + 
+				" SELECT ? aid, ? aname,? apass, ? azender, to_char(?,'yyyy-mm-dd') abirth," + 
+				" ? aheight, ? aactive, TO_CHAR(SYSDATE,'yyyy-mm-dd') adate, ? aweight from dual";
 		PreparedStatement st = con.prepareStatement(sql);
 		st.setString(1, dao.getCustId());
 		st.setString(2, dao.getCustName());
@@ -29,6 +33,7 @@ public class CustomerModel {
 		st.setDate(5, Util.convertDtoD(dao.getCustBirth()));
 		st.setDouble(6, dao.getCustHeight());
 		st.setInt(7, dao.getCustEtc());
+		st.setDouble(8, dao.getCustWeight());
 		st.executeUpdate();
 		st.close();
 	}

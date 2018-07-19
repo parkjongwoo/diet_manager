@@ -193,6 +193,7 @@ public class RegistView extends JFrame{
 		c.setCustBirth(dp.getDate());
 		c.setCustHeight(Double.parseDouble((tfHeight.getText())));
 		c.setCustEtc(Integer.parseInt(tfEtc.getText()));
+		c.setCustWeight(Double.parseDouble((tfWeight.getText())));
 		
 		try {
 			db.insertCustomer(c);

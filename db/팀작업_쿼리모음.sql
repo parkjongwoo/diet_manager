@@ -22,13 +22,19 @@ SELECT a.aname name, a.azender gender, a.abirth birth, a.aheight height,
 
 --***회원가입 화면 정보 입력 쿼리
 --직접입력
-INSERT INTO D_ACOUNT (AID, ANAME, APASS, AZENDER, ABIRTH, AHEIGHT, AACTIVE)
-VALUES ('shoong1999','박종우','6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b',
-'남성','1980/08/20',168, 20);
-
+INSERT ALL
+INTO d_acount VALUES (aid, aname, apass, azender, abirth, aheight, aactive)
+INTO d_weight VALUES (aid, adate, aweight)
+SELECT 'emm2000' aid, '음바페' aname,'1c73d5362e054cfee78a7e530f59f5faf5457fe970b599effc34dfd968b4119b' apass,
+'남성' azender, to_char(to_date('2002-09-05-14-11-12', 'yyyy-mm-dd-hh24-mi-ss'),'yyyy-mm-dd') abirth, 190 aheight, 30 aactive,
+TO_CHAR(SYSDATE,'yyyy-mm-dd') adate, 88 aweight from dual;
 --java용
---INSERT INTO D_ACOUNT (AID, ANAME, APASS, AZENDER, ABIRTH, AHEIGHT, AACTIVE)
---VALUES (?,?,?,?,?,?,?);
+--INSERT ALL
+--INTO d_acount VALUES (aid, aname, apass, azender, abirth, aheight, aactive)
+--INTO d_weight VALUES (aid, adate, aweight)
+--SELECT ? aid, ? aname,? apass,
+--? azender, to_char(?,'yyyy-mm-dd') abirth, ? aheight, ? aactive,
+--TO_CHAR(SYSDATE,'yyyy-mm-dd') adate, ? aweight from dual;
 
 
 --------------------------------------상세보기 화면
