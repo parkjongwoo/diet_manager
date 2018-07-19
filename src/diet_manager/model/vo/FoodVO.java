@@ -1,6 +1,8 @@
 package diet_manager.model.vo;
 
 public class FoodVO {
+	boolean isChecked;
+	
 	int fid;
 	String fname;
 	double fper;
@@ -13,8 +15,14 @@ public class FoodVO {
 	double fcho;
 	double fsat;
 	double ftran;
-	int fnum;
-	int fcate;
+
+	public boolean isChecked() {
+		return isChecked;
+	}
+
+	public void setChecked(boolean isChecked) {
+		this.isChecked = isChecked;
+	}
 
 	public int getFid() {
 		return fid;
@@ -112,22 +120,6 @@ public class FoodVO {
 		this.ftran = ftran;
 	}
 
-	public int getFnum() {
-		return fnum;
-	}
-
-	public void setFnum(int fnum) {
-		this.fnum = fnum;
-	}
-
-	public int getFcate() {
-		return fcate;
-	}
-
-	public void setFcate(int fcate) {
-		this.fcate = fcate;
-	}
-
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
@@ -142,9 +134,7 @@ public class FoodVO {
 		.append(String.valueOf(fna)).append(':')
 		.append(String.valueOf(fcho)).append(':')
 		.append(String.valueOf(fsat)).append(':')
-		.append(String.valueOf(ftran)).append(':')
-		.append(String.valueOf(fnum)).append(':')
-		.append(String.valueOf(fcate));
+		.append(String.valueOf(ftran));
 		return sb.toString();
 	}
 
