@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -24,7 +25,7 @@ import diet_manager.view.component.DatePicker;
 
 public class RegistView extends JFrame{
 	JTextField tfName, tfId, tfTel, 
-				tfAge, tfHeight, tfWeight, tfEtc;
+				/*tfAge,*/ tfHeight, tfWeight, tfEtc;
 	JPasswordField pfPass;
 	JRadioButton male, female;
 	JButton bRegist;
@@ -53,7 +54,7 @@ public class RegistView extends JFrame{
 		tfId = new JTextField(10);
 		pfPass = new JPasswordField(10);
 		tfTel = new JTextField(10);
-		tfAge = new JTextField(10);
+//		tfAge = new JTextField(10);
 		tfHeight = new JTextField(10);
 		tfWeight = new JTextField(10);
 		tfEtc = new JTextField(10);
@@ -101,7 +102,8 @@ public class RegistView extends JFrame{
 		p_category.add(p_grid5);
 		
 		JPanel p_grid6 = new JPanel();
-		p_grid6.add(new JLabel("생년월일   "));
+		p_grid6.setLayout(new BoxLayout(p_grid6, BoxLayout.Y_AXIS));
+		p_grid6.add(new JLabel("생년월일"));
 		p_grid6.add(dp);
 		p_category.add(p_grid6);
 		
@@ -152,9 +154,11 @@ public class RegistView extends JFrame{
 			msg="아이디를 입력하세요.";
 		}else if("".equals(tfTel.getText().trim())){
 			msg="전화번호를 입력하세요.";
-		}else if("".equals(tfAge.getText().trim())){
-			msg="나이를 입력하세요.";
-		}else if("".equals(tfHeight.getText().trim())){
+		}
+//		else if("".equals(tfAge.getText().trim())){
+//			msg="나이를 입력하세요.";
+//		}
+		else if("".equals(tfHeight.getText().trim())){
 			msg="신장을  입력하세요.";
 		}else if("".equals(tfWeight.getText().trim())){
 			msg="몸무게를 입력하세요.";
