@@ -1,11 +1,13 @@
 package diet_manager.view.component;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class DatePicker extends JPanel implements ActionListener{
@@ -17,7 +19,9 @@ public class DatePicker extends JPanel implements ActionListener{
 	JComboBox<Integer> yearPick;
 	JComboBox<Integer> monthPick;
 	JComboBox<Integer> datePick;
-	
+	JLabel l_year;
+	JLabel l_month;
+	JLabel l_date;
 	public DatePicker() {
 		this(Calendar.getInstance());
 	}	
@@ -41,9 +45,19 @@ public class DatePicker extends JPanel implements ActionListener{
 		monthPick = new JComboBox<Integer>();
 		datePick = new JComboBox<Integer>();
 		
+		l_year = new JLabel("년");
+		l_year.setFont(new Font("맑은고딕", Font.BOLD, 12));
+		l_month = new JLabel("월");
+		l_month.setFont(new Font("맑은고딕", Font.BOLD, 12));
+		l_date = new JLabel("일");
+		l_date.setFont(new Font("맑은고딕", Font.BOLD, 12));
+		
 		add(yearPick);
+		add(l_year);
 		add(monthPick);
+		add(l_month);
 		add(datePick);
+		add(l_date);
 		
 		initPickers();
 		eventProc();
