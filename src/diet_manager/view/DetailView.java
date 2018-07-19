@@ -21,6 +21,10 @@ import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 
+import diet_manager.model.CustomerModel;
+import diet_manager.model.vo.EatVO;
+import diet_manager.model.DetailViewModel;
+
 public class DetailView extends JFrame {
 	JTextArea taGraph;
 	JComboBox cbY, cbM, cbD;
@@ -30,10 +34,33 @@ public class DetailView extends JFrame {
 	
 	DetailView self;
 	
+	CustomerModel db;
+	DetailViewModel db_eat;
+	
 	public DetailView() {
 		addLayout();
 		eventProc();
+		connectDB();
+		connectDB2();
 		self = this;
+	}
+	private void connectDB() {
+		try {
+			db = new CustomerModel();
+			System.out.println("디비연결 성공");
+		}
+		catch (Exception e) {
+			System.out.println("대여디비 실패");
+		}
+	}
+	private void connectDB2() {
+		try {
+			db_eat = new DetailViewModel();
+			System.out.println("디비연결 성공");
+		}
+		catch (Exception e) {
+			System.out.println("대여디비 실패");
+		}
 	}
 	public void eventProc() {
 		EvtHdlr eh = new EvtHdlr();
@@ -45,7 +72,9 @@ public class DetailView extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			Object evt = e.getSource();
 			if(evt==btn) {
-				
+				String y = cbY.getSelectedItem().toString();
+				System.out.println(y);
+				select_date();
 			}
 			else if(evt==bDelete) {
 				
@@ -61,7 +90,27 @@ public class DetailView extends JFrame {
 				}
 			}
 		}
+	
+
+
+	public void select_date() {
+		String y = cbY.getSelectedItem().toString();
+		String m = cbM.getSelectedItem().toString();
+		String d = cbD.getSelectedItem().toString();
 		
+		EatVO eat = new EatVO();
+		eat.setEdate(y+m+d);
+		eat.setAid(db.customer.getCustId());
+		try {
+			tbModel.data = db_eat.find_food(eat);
+			tbModel.fireTableDataChanged();
+			System.out.println(y+m+d);
+		}
+		catch(Exception ex) {
+			JOptionPane.showMessageDialog(null, "목록실패:");
+		}
+	}
+	
 	}
 	public void addLayout() {
 		Integer[] strM = new Integer[12];
