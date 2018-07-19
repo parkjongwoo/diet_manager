@@ -1,13 +1,23 @@
 ------------------------------------로그인 화면
 
---***로그인 화면 id,pw 검색 결과 쿼리
+--***로그인 화면 id,pw 검색 결과 쿼리:: 로그인 유저의 최근 몸무게를 포함하여 신상정보를 반환.
 --직접입력
-SELECT * FROM D_ACOUNT 
-WHERE AID='shoong1999' and apass='6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b';
+SELECT a.aname name, a.azender gender, a.abirth birth, a.aheight height,
+			    w.aweight weight, a.aactive active
+			    FROM d_acount a INNER JOIN 
+                (select * from d_weight where aid='hong' and adate in
+                (select max(adate) from d_weight where aid='hong')) w 
+			    ON a.aid=w.aid 
+			    WHERE a.aid='hong' and a.apass='1c73d5362e054cfee78a7e530f59f5faf5457fe970b599effc34dfd968b4119b';
 
 --java용:: 반환 값이 있으면 로그인 성공. 없으면 실패.
---SELECT * FROM D_ACOUNT 
---WHERE AID=? and apass=?;
+--SELECT a.aname name, a.azender gender, a.abirth birth, a.aheight height,
+--			    w.aweight weight, a.aactive active
+--			    FROM d_acount a INNER JOIN 
+--                (select * from d_weight where aid=? and adate in
+--                (select max(adate) from d_weight where aid=?)) w 
+--			    ON a.aid=w.aid 
+--			    WHERE a.aid=? and a.apass=?;
 
 
 --***회원가입 화면 정보 입력 쿼리

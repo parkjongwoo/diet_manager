@@ -1,7 +1,6 @@
 package diet_manager.view;
 
 import java.awt.BorderLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,7 +8,6 @@ import java.util.Arrays;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -49,7 +47,7 @@ public class RegistView extends JFrame{
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void addLayout() {
 		tfName = new JTextField(10);
 		tfId = new JTextField(10);
@@ -146,12 +144,37 @@ public class RegistView extends JFrame{
 		
 	}
 	
+	private boolean checkFormData() {
+		String msg = null;
+		if("".equals(tfName.getText().trim())){
+			msg="이름을 입력하세요.";
+		}else if("".equals(tfId.getText().trim())){
+			msg="아이디를 입력하세요.";
+		}else if("".equals(tfTel.getText().trim())){
+			msg="전화번호를 입력하세요.";
+		}else if("".equals(tfAge.getText().trim())){
+			msg="나이를 입력하세요.";
+		}else if("".equals(tfHeight.getText().trim())){
+			msg="신장을  입력하세요.";
+		}else if("".equals(tfWeight.getText().trim())){
+			msg="몸무게를 입력하세요.";
+		}else if("".equals(tfEtc.getText().trim())){
+			msg="활동지수를 입력하세요.";
+		}
+		if(msg!=null) {
+			JOptionPane.showMessageDialog(this, msg);
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
 	class ButtonEventHandler implements ActionListener {
 		public void actionPerformed(ActionEvent ev) {
 			Object o = ev.getSource();
-			System.out.println(ev.toString());
 			if(o==bRegist) {
-				registCustomer();
+				if(checkFormData())
+					registCustomer();
 			}
 		}
 	}
@@ -176,6 +199,5 @@ public class RegistView extends JFrame{
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "접속실패:"+e.getMessage());
 		}
-	}
-	
+	}	
 }

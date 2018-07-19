@@ -34,15 +34,19 @@ public class CustomerModel {
 	}
 	
 	public int checkPass(String id,String pwHash) throws Exception {
-		String sql = "SELECT a.aname name, a.azender gender, a.abirth birth, a.aheight height,"
-			     + " w.aweight weight, a.aactive active"
-			     + " FROM d_acount a INNER JOIN d_weight w "
-			     + " ON a.aid=w.aid and a.aid=? "
-			     + " WHERE a.aid=? and a.apass=?";
+		System.out.println("id:"+id+" pwHash:"+pwHash);
+		String sql = "SELECT a.aname name, a.azender gender, a.abirth birth, a.aheight height, " + 
+				"			    w.aweight weight, a.aactive active " + 
+				"			    FROM d_acount a INNER JOIN " + 
+				"                (select * from d_weight where aid=? and adate in " + 
+				"                (select max(adate) from d_weight where aid=?)) w " + 
+				"			    ON a.aid=w.aid " + 
+				"			    WHERE a.aid=? and a.apass=?";
 		PreparedStatement st = con.prepareStatement(sql);
-		st.setString(1, id);
-		st.setString(2, id);
-		st.setString(3, pwHash);
+		st.setString(1, id.trim());
+		st.setString(2, id.trim());
+		st.setString(3, id.trim());
+		st.setString(4, pwHash);
 		ResultSet rs = st.executeQuery();
 		int result = 0;
 		while(rs.next()) {
@@ -55,6 +59,7 @@ public class CustomerModel {
 			customer.setCustWeight(rs.getDouble(5));
 			customer.setCustEtc(rs.getInt(6));
 			result++;
+			System.out.println("customer:"+customer.toString());
 		}
 		
 		rs.close();
