@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -209,6 +210,7 @@ public class FoodInsert extends JFrame {
 						EatVO vo = new EatVO();
 						vo.setAid(ViewModel.loginUser.getCustId());
 						vo.setFid(checkedVo.getFid());
+						vo.setEdate(dp_searchDate.getDate());
 						vo.setEtime(getSelectedPaneName());
 						vo.seteIntake(checkList.get(i).geteIntake());						
 						list.add(vo);

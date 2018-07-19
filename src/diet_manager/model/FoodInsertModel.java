@@ -32,15 +32,16 @@ public class FoodInsertModel {
 	public int insertEat(ArrayList<EatVO> list) throws SQLException {
 		int result = 0;		
 		String sql = "INSERT INTO D_EAT(EID,AID,EDATE,ETIME,FID,EINTAKE) " + 
-				" VALUES (D_SEQ_EID.NEXTVAL, ?, SYSDATE, ?, ?, ?)";
+				" VALUES (D_SEQ_EID.NEXTVAL, ?, ?, ?, ?, ?)";
 		PreparedStatement ps = conn.prepareStatement(sql);
 		
 		for(int i=0;i<list.size();i++) {
 			EatVO vo = list.get(i);
 			ps.setString(1, vo.getAid());
-			ps.setString(2, vo.getEtime());
-			ps.setInt(3, vo.getFid());
-			ps.setDouble(4, vo.geteIntake());
+			ps.setDate(2, Util.convertDtoD(vo.getEdate()));
+			ps.setString(3, vo.getEtime());
+			ps.setInt(4, vo.getFid());
+			ps.setDouble(5, vo.geteIntake());
 			ps.addBatch();
 			ps.clearParameters();
 		}
