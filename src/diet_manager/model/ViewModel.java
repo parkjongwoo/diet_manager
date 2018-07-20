@@ -81,7 +81,7 @@ public class ViewModel {
 
 	public void searchWeightList(String custId) throws SQLException {
 		weightList = new ArrayList<WeightVO>();
-		String sql = "SELECT ADATE,AWEIGHT FROM D_WEIGHT WHERE AID=? ORDER BY ADATE";
+		String sql = "SELECT to_char(ADATE,'yyyy-mm-dd') adate,AWEIGHT FROM D_WEIGHT WHERE AID=? ORDER BY ADATE";
 		PreparedStatement ps = con.prepareStatement(sql);
 		
 		ps.setString(1, custId);
