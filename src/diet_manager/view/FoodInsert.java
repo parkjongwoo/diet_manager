@@ -438,7 +438,7 @@ public class FoodInsert extends JFrame {
 			} else if (o == bInsert) {
 				insertEat();
 			} else if (o == bModify) {
-				
+//				tttt();
 			} else if (o == bDelete) {
 				
 			} else if (o == b_resetDate) {
@@ -447,5 +447,10 @@ public class FoodInsert extends JFrame {
 				SearchFood();
 			}
 		}
-	}	
+	}
+	
+//	private void tttt() {
+//		
+//		db.tttt();
+//	}
 }

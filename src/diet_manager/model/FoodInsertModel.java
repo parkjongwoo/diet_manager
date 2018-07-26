@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import diet_manager.model.vo.EatVO;
@@ -119,4 +120,27 @@ public class FoodInsertModel {
 		ps.close();
 		return list;
 	}
+
+//	public void tttt() {
+//		ArrayList<EatVO> list = new ArrayList<EatVO>();
+//		Calendar c = Calendar.getInstance();
+//		for(int i=0;i<5000;i++) {
+//			c.set(Calendar.DATE,c.get(Calendar.DATE)-1*5);
+//			EatVO vo = new EatVO();
+//			vo.setAid("butt11");
+//			vo.setEdate(c.getTime());
+//			vo.setEtime("아침");
+//			vo.setFid(i%1000+1);
+//			vo.seteIntake(1);
+//			list.add(vo);
+//			
+//			System.out.println(i%1000);
+//		}
+//		try {
+//			insertEat( list);
+//		} catch (SQLException e) {
+//			
+//			e.printStackTrace();
+//		}
+//	}
 }
