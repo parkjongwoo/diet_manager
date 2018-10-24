@@ -20,8 +20,8 @@ public class CrawlingModel {
 		checkData(list);
 		int result = 0;
 		String sql = "INSERT INTO D_FOOD ( " +
-				"fid, fname, fper, fcal, fco, fpro, ffat, fsu, fna, fcho, fsat, ftran, fnum, fcate) "+
-				"VALUES (d_seq_fid.nextval, ?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				"fid, fname, fper, fcal, fco, fpro, ffat, fsu, fna, fcho, fsat, ftran) "+
+				"VALUES (d_seq_fid.nextval, ?,?,?,?,?,?,?,?,?,?,?)";
 		
 		FoodVO dao=null;
 		PreparedStatement ps = conn.prepareStatement(sql);
